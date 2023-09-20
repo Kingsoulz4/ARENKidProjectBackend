@@ -1,21 +1,34 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<MvcWordAssetsContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("MvcWordAssetsContext") ?? throw new InvalidOperationException("Connection string 'MvcWordAssetsContext' not found.")));
 
+if(!builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDbContext<MvcModel3DDataContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("MvcModel3DDataContext") ?? throw new InvalidOperationException("Connection string 'MvcModel3DDataContext' not found.")));
+}
+else
+{
+    builder.Services.AddDbContext<MvcWordAssetsContext>(options =>
+        options.UseSqlite(builder.Configuration.GetConnectionString("MvcWordAssetsContext") ?? throw new InvalidOperationException("Connection string 'MvcWordAssetsContext' not found.")));
+}
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+Console.WriteLine("Environment  is development" + app.Environment.IsDevelopment());
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
+    
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+    
 }
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

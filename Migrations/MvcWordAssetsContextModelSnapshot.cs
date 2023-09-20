@@ -14,7 +14,239 @@ namespace ProjectBackend.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.10");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.11");
+
+            modelBuilder.Entity("ProjectBackend.Models.AnimationData", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("WordAssetDataID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("WordAssetDataID");
+
+                    b.ToTable("AnimationData");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.AudioData", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("AudioType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("Duration")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("WordAssetDataID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WordAssetDataID");
+
+                    b.ToTable("AudioData");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.GameData", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("WordAssetDataID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("WordAssetDataID");
+
+                    b.ToTable("GameData");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.ImageData", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("ImageType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("WordAssetDataID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WordAssetDataID");
+
+                    b.ToTable("ImageData");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.Mode3DBehaviorData", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("ActionType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("Audio")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("Model3DDataID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("Thumb")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Model3DDataID");
+
+                    b.ToTable("Mode3DBehaviorData");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.Model3DData", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FileType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LinkDownload")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("WordAssetDataID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WordAssetDataID");
+
+                    b.ToTable("Model3DData");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.SyncAudioData", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("AudioDataDataID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long?>("AudioDataId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("End")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("Start")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("Te")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("Ts")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Word")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AudioDataId");
+
+                    b.ToTable("SyncAudioData");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.VideoData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("VideoType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long?>("WordAssetDataID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WordAssetDataID");
+
+                    b.ToTable("VideoData");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.WordAssetData", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("PathAsset")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("SentenceType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("WordAssetDataID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("WordAssetDataID");
+
+                    b.ToTable("WordAssetData");
+                });
 
             modelBuilder.Entity("ProjectBackend.Models.WordAssets", b =>
                 {
@@ -25,12 +257,112 @@ namespace ProjectBackend.Migrations
                     b.Property<DateTime?>("DateCreated")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("LinkDownLoad")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Text")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.ToTable("WordAssets");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.AnimationData", b =>
+                {
+                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
+                        .WithMany("Animations")
+                        .HasForeignKey("WordAssetDataID");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.AudioData", b =>
+                {
+                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
+                        .WithMany("Audio")
+                        .HasForeignKey("WordAssetDataID");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.GameData", b =>
+                {
+                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
+                        .WithMany("Games")
+                        .HasForeignKey("WordAssetDataID");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.ImageData", b =>
+                {
+                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
+                        .WithMany("Image")
+                        .HasForeignKey("WordAssetDataID");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.Mode3DBehaviorData", b =>
+                {
+                    b.HasOne("ProjectBackend.Models.Model3DData", "Model3DData")
+                        .WithMany("Behavior")
+                        .HasForeignKey("Model3DDataID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Model3DData");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.Model3DData", b =>
+                {
+                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
+                        .WithMany("Model3D")
+                        .HasForeignKey("WordAssetDataID");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.SyncAudioData", b =>
+                {
+                    b.HasOne("ProjectBackend.Models.AudioData", "AudioData")
+                        .WithMany("SyncData")
+                        .HasForeignKey("AudioDataId");
+
+                    b.Navigation("AudioData");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.VideoData", b =>
+                {
+                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
+                        .WithMany("Video")
+                        .HasForeignKey("WordAssetDataID");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.WordAssetData", b =>
+                {
+                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
+                        .WithMany("FilterWord")
+                        .HasForeignKey("WordAssetDataID");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.AudioData", b =>
+                {
+                    b.Navigation("SyncData");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.Model3DData", b =>
+                {
+                    b.Navigation("Behavior");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.WordAssetData", b =>
+                {
+                    b.Navigation("Animations");
+
+                    b.Navigation("Audio");
+
+                    b.Navigation("FilterWord");
+
+                    b.Navigation("Games");
+
+                    b.Navigation("Image");
+
+                    b.Navigation("Model3D");
+
+                    b.Navigation("Video");
                 });
 #pragma warning restore 612, 618
         }

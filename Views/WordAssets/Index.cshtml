@@ -9,6 +9,17 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form asp-controller="WordAssets" asp-action="Index" method="get">
+    <p>
+        Input: <input type="text" name="SearchPattern" />
+        <input type="submit" value="Filter"/>
+
+    </p>
+
+
+</form>
+
 <table class="table">
     <thead>
         <tr>
@@ -17,6 +28,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DateCreated)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LinkDownLoad)
             </th>
             <th></th>
         </tr>
@@ -30,6 +44,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.DateCreated)
             </td>
+            <th>
+                @Html.DisplayFor(modelItem => item.LinkDownLoad)
+            </th>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

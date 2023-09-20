@@ -5,6 +5,7 @@ a.navbar-brand {
   white-space: normal;
   text-align: center;
   word-break: break-all;
+  color: #cc0033;
 }
 
 a {
@@ -12,14 +13,14 @@ a {
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
+  color: #96f878;
+  background-color: #1f94ee;
   border-color: #1861ac;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
+  color: #96f878;
+  background-color: #1f94ee;
   border-color: #1861ac;
 }
 
@@ -37,6 +38,11 @@ a {
 button.accept-policy {
   font-size: 1rem;
   line-height: inherit;
+}
+
+.project-name
+{
+  color: #ca2254;
 }
 
 .footer {

@@ -13,4 +13,14 @@ using ProjectBackend.Models;
         }
 
         public DbSet<ProjectBackend.Models.WordAssets> WordAssets { get; set; } = default!;
+
+        public DbSet<ProjectBackend.Models.Model3DData>? Model3DData { get; set; }
+
+        public DbSet<ProjectBackend.Models.Mode3DBehaviorData>? Mode3DBehaviorData { get; set; }
+
+        public DbSet<ProjectBackend.Models.VideoData>? VideoData { get; set; }
+
+        public DbSet<ProjectBackend.Models.AudioData>? AudioData { get; set; }
+
+        public DbSet<ProjectBackend.Models.WordAssetData>? WordAssetData { get; set; }
     }

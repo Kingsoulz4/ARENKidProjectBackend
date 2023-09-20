@@ -19,11 +19,21 @@ namespace ProjectBackend.Controllers
         }
 
         // GET: WordAssets
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchPattern)
         {
-              return _context.WordAssets != null ? 
-                          View(await _context.WordAssets.ToListAsync()) :
-                          Problem("Entity set 'MvcWordAssetsContext.WordAssets'  is null.");
+            if(_context.WordAssets == null)
+            {
+                return Problem("Entity set WordAssets null");
+            }
+
+            var wordAssets = from w in _context.WordAssets select w;
+
+            if(!string.IsNullOrEmpty(searchPattern))
+            {
+                wordAssets = wordAssets.Where(x => x.Text!.Contains(searchPattern));
+            }
+
+            return View(await wordAssets.ToListAsync());
         }
 
         // GET: WordAssets/Details/5
@@ -55,7 +65,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Text,DateCreated")] WordAssets wordAssets)
+        public async Task<IActionResult> Create([Bind("Id,Text,DateCreated, LinkDownLoad")] WordAssets wordAssets)
         {
             if (ModelState.IsValid)
             {
