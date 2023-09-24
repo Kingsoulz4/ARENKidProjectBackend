@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Create";
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
 }
 
 <h1>Create</h1>
@@ -10,12 +11,12 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form enctype="multipart/form-data" asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="FilePath" class="control-label"></label>
-                <input asp-for="FilePath" class="form-control" />
-                <span asp-validation-for="FilePath" class="text-danger"></span>
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Duration" class="control-label"></label>
@@ -27,6 +28,19 @@
                 <input asp-for="AudioType" class="form-control" />
                 <span asp-validation-for="AudioType" class="text-danger"></span>
             </div>
+
+
+
+            <div class="form-group">
+                <span>Select your audio </span>
+                <input type="file" id="audioInput" name="audioToUpload" />
+                <audio controls id="audioPlayer" style="display:none"></audio>
+
+            </div>
+
+            <br />
+            <span> @Html.Raw(ViewBag.Message)</span>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -39,5 +53,28 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+
+<script>
+    document.getElementById('audioInput').addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        const audioPlayer = document.getElementById('audioPlayer');
+
+        if (audioPlayer.hasChildNodes()) {
+            audioPlayer.removeChild(audioPlayer.firstChild)
+        }
+        const source = document.createElement('source');
+
+        const objectURL = URL.createObjectURL(file);
+        source.src = objectURL;
+        source.type = 'audio/mpeg';
+
+        audioPlayer.appendChild(source);
+        audioPlayer.load();
+        audioPlayer.style.display = 'block';
+    });
+
+</script>

@@ -23,4 +23,6 @@ using ProjectBackend.Models;
         public DbSet<ProjectBackend.Models.AudioData>? AudioData { get; set; }
 
         public DbSet<ProjectBackend.Models.WordAssetData>? WordAssetData { get; set; }
+
+        public DbSet<ProjectBackend.Models.ImageData>? ImageData { get; set; }
     }

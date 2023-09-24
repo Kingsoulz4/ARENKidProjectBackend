@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Index";
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
 }
 
 <h1>Index</h1>
@@ -9,9 +10,20 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form asp-controller="AudioData" asp-action="Index" method="get">
+    <p>
+        Word: <input type="text" name="searchPattern" />
+        <input type="submit" value="Filter" />
+    </p>
+</form>
+
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.FilePath)
             </th>
@@ -27,6 +39,9 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.FilePath)
             </td>

@@ -7,8 +7,11 @@ public class AudioData
     [JsonProperty("id")]
     public long Id { get; set; }
 
+    [JsonProperty("name")]
+    public string? Name {get; set;}
+
     [JsonProperty("file_path")]
-    public string FilePath { get; set; }
+    public string? FilePath { get; set; }
 
     [JsonProperty("duration")]
     public long Duration { get; set; }
@@ -17,7 +20,10 @@ public class AudioData
     public long AudioType { get; set; }
 
     [JsonProperty("sync_data")]
-    public List<SyncAudioData> SyncData { get; set; }
+    public List<SyncAudioData>? SyncData { get; set; }
+
+    [JsonIgnore]
+    public List<WordAssetData>? WordAssetDatas {get; set;}
 
 
 }

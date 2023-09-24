@@ -9,6 +9,11 @@ using ProjectBackend.Models;
 
 namespace ProjectBackend.Controllers
 {
+    public class AudioDataParamsHolder
+    {
+        public IFormFile? AudioFile{get; set;}
+    }
+
     public class AudioDataController : Controller
     {
         private readonly MvcWordAssetsContext _context;
@@ -24,6 +29,28 @@ namespace ProjectBackend.Controllers
               return _context.AudioData != null ? 
                           View(await _context.AudioData.ToListAsync()) :
                           Problem("Entity set 'MvcWordAssetsContext.AudioData'  is null.");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Index(string searchPattern)
+        {
+            if (_context.AudioData == null)
+            {
+                return Problem("Entity set 'AudioData'  is null.");
+            }
+
+            var audioData = from m in _context.AudioData
+                         select m;
+
+            if (!String.IsNullOrEmpty(searchPattern))
+            {
+                Console.WriteLine("WordAsset search " + searchPattern);
+                audioData = audioData.Where(s => s.Name!.Contains(searchPattern));
+            }
+
+
+            return View(await audioData.ToListAsync());
         }
 
         // GET: AudioData/Details/5
@@ -50,20 +77,57 @@ namespace ProjectBackend.Controllers
             return View();
         }
 
+        // // POST: AudioData/Create
+        // // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // [HttpPost]
+        // [ValidateAntiForgeryToken]
+        // public async Task<IActionResult> Create([Bind("Id,FilePath,Duration,AudioType")] AudioData audioData)
+        // {
+        //     if (ModelState.IsValid)
+        //     {
+        //         _context.Add(audioData);
+        //         await _context.SaveChangesAsync();
+        //         return RedirectToAction(nameof(Index));
+        //     }
+        //     return View(audioData);
+        // }
+
         // POST: AudioData/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FilePath,Duration,AudioType")] AudioData audioData)
+        public async Task<IActionResult> Create([Bind("Id,Name,FilePath,Duration,AudioType")] AudioData audioData, IFormFile audioToUpload)
         {
-            if (ModelState.IsValid)
+            if(audioToUpload == null)
             {
-                _context.Add(audioData);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                Console.WriteLine("file audio null");
+                return Ok();
             }
-            return View(audioData);
+
+            //Need To Modify
+            var destination = "./Temp/Audios";
+            if(!Directory.Exists(destination))
+            {
+                Directory.CreateDirectory(destination);
+            }
+            var filePath = Path.Combine(destination, DateTime.Now.ToFileTimeUtc() + Path.GetExtension(audioToUpload.FileName));
+            using(var fileStream = System.IO.File.Open(filePath, FileMode.Create))
+            {
+                await audioToUpload.CopyToAsync(fileStream);
+
+                if (ModelState.IsValid)
+                {
+                    audioData.FilePath = $"audio/{Path.GetFileName(filePath)}";
+                    _context.Add(audioData);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(audioData);
+                
+            }
+
         }
 
         // GET: AudioData/Edit/5
@@ -79,6 +143,10 @@ namespace ProjectBackend.Controllers
             {
                 return NotFound();
             }
+
+            // Need To Modify
+            ViewBag.AudioFile = Path.Combine("./Temp/Audios", Path.GetFileName(audioData.FilePath!));
+
             return View(audioData);
         }
 
@@ -87,7 +155,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,FilePath,Duration,AudioType")] AudioData audioData)
+        public async Task<IActionResult> Edit(long id, [Bind("Id,FilePath,Duration,AudioType")] AudioData audioData, [Bind("AudioFile")] AudioDataParamsHolder audioDataParamsHolder)
         {
             if (id != audioData.Id)
             {
@@ -96,6 +164,19 @@ namespace ProjectBackend.Controllers
 
             if (ModelState.IsValid)
             {
+                // Need To Modify
+                if(audioDataParamsHolder != null && audioDataParamsHolder.AudioFile != null)
+                {
+                    var filePath = Path.Combine("./Temp/Audios", Path.GetFileName(audioData.FilePath!));
+
+                    using(var fileStream = System.IO.File.Open(filePath, FileMode.OpenOrCreate))
+                    {
+                        await audioDataParamsHolder.AudioFile.CopyToAsync(fileStream);
+
+                        // Maybe cause bug
+                    }
+                }
+
                 try
                 {
                     _context.Update(audioData);

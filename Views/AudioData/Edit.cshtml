@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Edit";
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
 }
 
 <h1>Edit</h1>
@@ -13,6 +14,13 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+
+            <div class="form-group">
+                <input type="file" name="audioFile" id="audioInput" />
+                <video id="audioPreview" controls="" autoplay="" name="media">
+                    <source src="@ViewBag.AudioFile" type="audio/mpeg" >
+                </video>
+            </div>
             <div class="form-group">
                 <label asp-for="FilePath" class="control-label"></label>
                 <input asp-for="FilePath" class="form-control" />
@@ -33,6 +41,7 @@
             </div>
         </form>
     </div>
+
 </div>
 
 <div>
@@ -40,5 +49,29 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+
+
+<script>
+    document.getElementById('audioInput').addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        const audioPlayer = document.getElementById('audioPreview');
+
+        if (audioPlayer.hasChildNodes()) {
+            audioPlayer.removeChild(audioPlayer.firstChild)
+        }
+        const source = document.createElement('source');
+
+        const objectURL = URL.createObjectURL(file);
+        source.src = objectURL;
+        source.type = 'audio/mpeg';
+
+        audioPlayer.appendChild(source);
+        audioPlayer.load();
+        audioPlayer.style.display = 'block';
+    });
+
+</script>

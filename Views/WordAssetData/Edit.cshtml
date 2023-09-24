@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Edit";
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
 }
 
 <h1>Edit</h1>
@@ -33,12 +34,241 @@
             </div>
         </form>
     </div>
+
+
+    <div class="col-md-4">
+        <div class="btn-group">
+            <button type="button" class="dropdown-toggle btn btn-info" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="true">
+                List Model 3D
+            </button>
+            <div class="dropdown-menu justify-content-center">
+                @{
+
+                    if (Model.Model3Ds != null)
+                    {
+                        Console.WriteLine("dropdown-menu Model list " + Model.Model3Ds!.Count);
+                        foreach (var md in Model.Model3Ds!)
+                        {
+                            <a asp-controller="Model3DData" asp-action="Edit" asp-route-id="@md.Id"> @md.Name - @md.Id </a>
+                            <br>
+                        }
+                    }
+                }
+            </div>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="dropdown-toggle btn btn-info" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="true">
+                List Audio
+            </button>
+            <div class="dropdown-menu justify-content-center">
+                @{
+
+                    if (Model.Audios != null)
+                    {
+                        Console.WriteLine("dropdown-menu Audio list " + Model.Audios!.Count);
+                        foreach (var au in Model.Audios!)
+                        {
+                            <a asp-controller="AudioData" asp-action="Edit" asp-route-id="@au.Id"> @au.Name - @au.Id </a>
+                            <br>
+                        }
+                    }
+                }
+            </div>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="dropdown-toggle btn btn-info" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="true">
+                List Image
+            </button>
+            <div class="dropdown-menu justify-content-center">
+                @{
+
+                    if (Model.Images != null)
+                    {
+                        Console.WriteLine("dropdown-menu Audio list " + Model.Images!.Count);
+                        foreach (var im in Model.Images!)
+                        {
+                            <a asp-controller="ImageData" asp-action="Edit" asp-route-id="@im.Id"> @im.Name - @im.Id </a>
+                            <br>
+                        }
+                    }
+                }
+            </div>
+        </div>
+
+    </div>
+
+
 </div>
+
+<hr class="sidebar-divider">
+
+<div class="row">
+    <div class="col-md-4">
+        <h6 class="font-weight-bold">Config Flashcard</h6>
+        <img src="http://placehold.it/180" id="imgPreview" class="rounded" alt="...">
+        <form enctype="multipart/form-data" asp-action="ChangeFlashCard">
+            <div class="form-group">
+                <input type="hidden" name="wordAssetID" value=@Model.ID />
+            </div>
+
+            <div class="form-group">
+                <input type="hidden" name="wordAssetToModify" value=@Model />
+            </div>
+
+            <input type="file" onchange="readURL(this);" name="imageToChange" />
+
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<!-- Config 3D model region -->
+<hr class="sidebar-divider">
+<div class="row">
+    <div class="col-md-4">
+        <h6 class="font-weight-bold">
+            Config Model 3D
+        </h6>
+        <form asp-action="AddOrRemove3DModel">
+
+            <div class="form-group">
+                <input type="hidden" name="wordAssetID" value=@Model.ID />
+            </div>
+
+            <div class="form-floating mb-3 form-group">
+                <label for="model3DIDfloatingInput">Enter Model 3D ID</label>
+                <input name="model3DID" class="form-control" id="model3DIDfloatingInput">
+
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </form>
+        <div>
+            <a asp-controller="Model3DData" asp-action="Create">Add New Model 3D</a>
+        </div>
+    </div>
+</div>
+<hr class="sidebar-divider">
+
+<!-- Config Audio region -->
+<hr class="sidebar-divider">
+<div class="row">
+    <div class="col-md-4">
+        <h6 class="font-weight-bold">
+            Config Audio
+        </h6>
+        <form asp-action="AddOrRemoveAudio">
+
+            <div class="form-group">
+                <input type="hidden" name="wordAssetID" value=@Model.ID />
+            </div>
+
+            <div class="form-floating mb-3">
+                <label for="AudioIDFloatingInput">Enter Audio ID</label>
+                <input name="audioID" class="form-control" id="AudioIDFloatingInput">
+
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </form>
+        <div>
+            <a asp-controller="AudioData" asp-action="Create">Add New Audio</a>
+        </div>
+    </div>
+</div>
+<hr class="sidebar-divider">
+
+<!-- Config Image region -->
+<div class="row">
+    <div class="col-md-4">
+        <h6 class="font-weight-bold">
+            Config Image
+        </h6>
+        <form asp-action="AddOrRemoveImage">
+
+            <div class="form-group">
+                <input type="hidden" name="wordAssetID" value=@Model.ID />
+            </div>
+
+            <div class="form-floating mb-3">
+                <label for="ImageIDFloatingInput">Enter Image ID</label>
+                <input name="imageID" class="form-control" id="ImageIDFloatingInput">
+
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </form>
+        <div>
+            <a asp-controller="ImageData" asp-action="Create">Add new Image</a>
+        </div>
+    </div>
+</div>
+<hr class="sidebar-divider">
+
+<!-- Config Image region -->
+<div class="row">
+    <div class="col-md-4">
+        <h6 class="font-weight-bold">
+            Config Video
+        </h6>
+        <form asp-action="AddOrRemoveVideo">
+
+            <div class="form-group">
+                <input type="hidden" name="wordAssetID" value=@Model.ID />
+            </div>
+
+            <div class="form-floating mb-3">
+                <label for="VideoIDFloatingInput">Enter Video ID</label>
+                <input name="videoID" class="form-control" id="VideoIDFloatingInput">
+
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </form>
+        <div>
+            <a asp-controller="VideoData" asp-action="Create">Add New Video</a>
+        </div>
+    </div>
+</div>
+<hr class="sidebar-divider">
+
+
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+
+<script>
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#imgPreview')
+                    .attr('src', e.target.result);
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

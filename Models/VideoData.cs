@@ -8,6 +8,9 @@ public partial class VideoData
     [JsonProperty("id")]
     public int Id { get; set; }
 
+    [JsonProperty("name")]
+    public string? Name {get; set;}
+
     [JsonProperty("link")]
     public string? Link { get; set; }
 
@@ -19,4 +22,7 @@ public partial class VideoData
 
     [JsonProperty("video_type")]
     public int VideoType { get; set; }
+
+    [JsonIgnore]
+    public List<WordAssetData>? WordAssetDatas{get; set;}
 }

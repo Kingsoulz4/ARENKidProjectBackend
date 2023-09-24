@@ -2,7 +2,7 @@
 
 using Newtonsoft.Json;
 
-namespace ProjectBackend.Models ;
+namespace ProjectBackend.Models;
 
 public partial class ImageData
 {
@@ -10,7 +10,7 @@ public partial class ImageData
     public long Id { get; set; }
 
     [JsonProperty("name")]
-    public string?  Name {get; set;}
+    public string? Name { get; set; }
 
     [JsonProperty("link")]
     public string? Link { get; set; }
@@ -20,4 +20,7 @@ public partial class ImageData
 
     [JsonProperty("image_type")]
     public long ImageType { get; set; }
+
+    [JsonIgnore]
+    public List<WordAssetData>? WordAssetDatas { get; set; }
 }

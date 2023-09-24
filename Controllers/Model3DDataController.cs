@@ -35,6 +35,27 @@ namespace ProjectBackend.Controllers
                           Problem("Entity set 'MvcWordAssetsContext.Model3DData'  is null.");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Index(string searchPattern)
+        {
+            if (_context.Model3DData == null)
+            {
+                return Problem("Entity set 'Model3DData'  is null.");
+            }
+
+            var model3DData = from m in _context.Model3DData
+                         select m;
+
+            if (!String.IsNullOrEmpty(searchPattern))
+            {
+                Console.WriteLine("VideoData search " + searchPattern);
+                model3DData = model3DData.Where(s => s.Name!.Contains(searchPattern));
+            }
+
+
+            return View(await model3DData.ToListAsync());
+        }
+
         // GET: Model3DData/Details/5
         public async Task<IActionResult> Details(long? id)
         {

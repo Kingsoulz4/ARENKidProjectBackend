@@ -24,6 +24,7 @@ public class Model3DData
     [JsonProperty("behavior")]
     public ICollection<Mode3DBehaviorData>? Behavior { get; set; }
 
+    [JsonIgnore]
     public ICollection<WordAssetData>? WordAssetDatas {get; set;}
 
 
