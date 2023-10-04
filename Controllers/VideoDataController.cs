@@ -34,7 +34,6 @@ namespace ProjectBackend.Controllers
 
 
         [HttpGet]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(string searchPattern)
         {
             if (_context.VideoData == null)
@@ -83,10 +82,10 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Link,FilePath,Duration,VideoType")] VideoData videoData, [Bind("VideoFile")] VideoDataParamsHolder videoCreateDataHolder)
+        public async Task<IActionResult> Create([Bind("Id,Name, Link,FilePath,Duration,VideoType")] VideoData videoData, [Bind("VideoFile")] VideoDataParamsHolder videoCreateDataHolder)
         {
             //Need To Modify
-            var destinationDir = "./Temp/Videos";
+            var destinationDir = $"{ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath()}/Videos";
             if (!Directory.Exists(destinationDir))
             {
                 Directory.CreateDirectory(destinationDir);
@@ -124,7 +123,7 @@ namespace ProjectBackend.Controllers
                 return NotFound();
             }
 
-            ViewBag.VideoFile = Path.Combine("./Temp/Videos", videoData.FilePath!);
+            ViewBag.VideoFile = Path.Combine($"{ConfigurationManager.Instance!.GetUnityDataBuildRelativePath()}/Videos", videoData.FilePath!);
             
             return View(videoData);
         }
@@ -146,7 +145,7 @@ namespace ProjectBackend.Controllers
                 //Need To Modify
                 if(videoDataParamsHolder != null && videoDataParamsHolder.VideoFile != null)
                 {
-                    var filePath = Path.Combine("./Temp/Videos", Path.GetFileName(videoData.FilePath!));
+                    var filePath = Path.Combine($"{ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath()}/Videos", Path.GetFileName(videoData.FilePath!));
                     using(var fileStream = System.IO.File.Open(filePath, FileMode.OpenOrCreate))
                     {
                         await videoDataParamsHolder.VideoFile.CopyToAsync(fileStream);

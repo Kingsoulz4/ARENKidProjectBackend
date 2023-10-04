@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using NuGet.Protocol;
@@ -30,9 +31,9 @@ namespace ProjectBackend.Controllers
         // GET: Model3DData
         public async Task<IActionResult> Index()
         {
-              return _context.Model3DData != null ? 
-                          View(await _context.Model3DData.ToListAsync()) :
-                          Problem("Entity set 'MvcWordAssetsContext.Model3DData'  is null.");
+            return _context.Model3DData != null ?
+                        View(await _context.Model3DData.ToListAsync()) :
+                        Problem("Entity set 'MvcWordAssetsContext.Model3DData'  is null.");
         }
 
         [HttpGet]
@@ -44,7 +45,7 @@ namespace ProjectBackend.Controllers
             }
 
             var model3DData = from m in _context.Model3DData
-                         select m;
+                              select m;
 
             if (!String.IsNullOrEmpty(searchPattern))
             {
@@ -87,19 +88,38 @@ namespace ProjectBackend.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,LinkDownload,FileType")] Model3DData model3DData, IFormFile fileToUpload)
         {
-            var resultUpload = await UploadHelper.UpLoadFileToFirebaseStorage(fileToUpload, ApiKey, AuthEmail, AuthPassword, Bucket, "something/data");
-
-            Console.WriteLine("Upload res: "+ resultUpload.ToJToken());
-            var jsonTokRes = resultUpload.ToJToken();
-            var val = jsonTokRes.SelectToken("Value");
-            var linkDownload = val.Value<string>("message");
-            Console.WriteLine("ModelDDataController Download link: " + linkDownload);
-
-            model3DData.FileType = Path.GetExtension(fileToUpload.FileName);
-            model3DData.LinkDownload = linkDownload;
+            
 
             if (ModelState.IsValid)
             {
+                bool uploadDone = false;
+
+                //var resultUpload = await UploadHelper.UpLoadFileToFirebaseStorage(fileToUpload, ApiKey, AuthEmail, AuthPassword, Bucket, "something/data");
+
+                var destinationDir = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), DataDirectoryNames.Model3DDataDir);
+                var filePath = Path.Combine(destinationDir, DateTime.Now.ToFileTimeUtc() + Path.GetExtension(fileToUpload.FileName));
+
+                using(var fileStream = System.IO.File.Open(filePath, FileMode.OpenOrCreate))
+                {
+                    await fileToUpload.CopyToAsync(fileStream);
+                    uploadDone = true;
+                }
+
+                while(!uploadDone); 
+
+                //Need To Modify
+                var endPoint = $"https://localhost:7253/Model3DData/api/download?fileName={Path.GetFileName(filePath)}";
+
+                // Console.WriteLine("Upload res: " + resultUpload.ToJToken());
+                // var jsonTokRes = resultUpload.ToJToken();
+                // var val = jsonTokRes.SelectToken("Value");
+                // var linkDownload = val!.Value<string>("message");
+                var linkDownload = endPoint;
+                Console.WriteLine("ModelDDataController Download link: " + linkDownload);
+
+                model3DData.FileType = Path.GetExtension(fileToUpload.FileName);
+                model3DData.LinkDownload = linkDownload;
+
                 _context.Add(model3DData);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -190,18 +210,48 @@ namespace ProjectBackend.Controllers
             {
                 _context.Model3DData.Remove(model3DData);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool Model3DDataExists(long id)
         {
-          return (_context.Model3DData?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Model3DData?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
+        public async Task<IActionResult> AddOrRemoveBehavior(long model3DID, long behaviorID)
+        {
+
+            var model3D = _context.Model3DData!.Where(x => x.Id == model3DID).Single();
+
+            var behavior = _context.Mode3DBehaviorData!.Where(x => x.Id == behaviorID).Single();
+
+            if (behavior == null)
+            {
+                return Problem("Behavior not exist");
+            }
+
+            var behaviorBelongTo = model3D.Behavior!.Find(x => x.Id == behavior.Id);
+
+            if (!model3D.Behavior!.Any() ||
+                 behaviorBelongTo != null)
+            {
+                model3D.Behavior!.Add(behavior);
+            }
+            else
+            {
+                model3D.Behavior.Remove(behaviorBelongTo!);
+            }
+
+            await Task.Yield();
+
+            return RedirectToAction(nameof(Edit), new { id = model3DID });
+        }
+
+
         [HttpPost]
-        public async Task<ActionResult> UploadModel3DToCloud(IFormFile  fileToUpload)
+        public async Task<ActionResult> UploadModel3DToCloud(IFormFile fileToUpload)
         {
             await UploadHelper.UpLoadFileToFirebaseStorage(fileToUpload, ApiKey, AuthEmail, AuthPassword, Bucket, "something/data");
 
@@ -214,13 +264,29 @@ namespace ProjectBackend.Controllers
         [HttpGet("Model3DData/api/list_model")]
         public async Task<JsonResult> GetListModelDataAsJson()
         {
-            if(_context.Model3DData != null && _context.Model3DData?.Count() != 0)
+            if (_context.Model3DData != null && _context.Model3DData?.Count() != 0)
             {
-                var list_model = await _context.Model3DData.ToListAsync();
+                var list_model = await _context.Model3DData!.ToListAsync();
                 return new JsonResult(JsonConvert.SerializeObject(list_model));
             }
 
             return new JsonResult(NotFound());
+        }
+
+        [HttpGet]
+        [Route("Model3DData/api/download")]
+        public async Task<IActionResult> DownloadModel3DFile(string filename)
+        {
+            var filepath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), "Model3Ds", filename);
+
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filepath, out var contenttype))
+            {
+                contenttype = "application/octet-stream";
+            }
+
+            var bytes = await System.IO.File.ReadAllBytesAsync(filepath);
+            return File(bytes, contenttype, Path.GetFileName(filepath));
         }
 
     }

@@ -71,7 +71,7 @@ public class UploadHelper
                         });
 
 
-                    FirebaseStorageReference fsRef = null;
+                    FirebaseStorageReference? fsRef = null;
 
                     for(int i=0; i<listDir.Length; i++)
                     {
@@ -81,11 +81,11 @@ public class UploadHelper
                         }
                         else
                         {
-                            fsRef = fsRef.Child(listDir[i]);
+                            fsRef = fsRef!.Child(listDir[i]);
                         }
                     }
                         
-                    FirebaseStorageTask task = null;
+                    FirebaseStorageTask? task = null;
                     if(fsRef != null)
                     {
                         fsRef = fsRef.Child(fileToUpload.FileName);
@@ -98,7 +98,7 @@ public class UploadHelper
 
                     task = fsRef.PutAsync(streamFile, cancellation.Token);
 
-                    task.Progress.ProgressChanged += (s, e) => Console.WriteLine($"Progress: {e.Percentage} %");
+                    task.Progress.ProgressChanged += (s, e) => Console.WriteLine($"Progress: {e.Percentage} {e} %");
                     // error during upload will be thrown when you await the task
                     messageResult = await task;
                     

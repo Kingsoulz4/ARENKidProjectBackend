@@ -165,7 +165,7 @@ namespace ProjectBackend.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool WordAssetsExists(int id)
+        private bool WordAssetsExists(long id)
         {
           return (_context.WordAssets?.Any(e => e.Id == id)).GetValueOrDefault();
         }

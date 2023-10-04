@@ -9,6 +9,12 @@ using ProjectBackend.Models;
 
 namespace ProjectBackend.Controllers
 {
+
+    public class Mode3DBehaviorDataParamsHolder
+    {
+        public IFormFile? FlashCardImage { get; set; }
+    }
+
     public class Mode3DBehaviorDataController : Controller
     {
         private readonly MvcWordAssetsContext _context;
@@ -21,7 +27,7 @@ namespace ProjectBackend.Controllers
         // GET: Mode3DBehaviorData
         public async Task<IActionResult> Index()
         {
-            var mvcWordAssetsContext = _context.Mode3DBehaviorData.Include(m => m.Model3DData);
+            var mvcWordAssetsContext = _context.Mode3DBehaviorData!.Include(m => m.Model3DData);
             return View(await mvcWordAssetsContext.ToListAsync());
         }
 
@@ -154,14 +160,14 @@ namespace ProjectBackend.Controllers
             {
                 _context.Mode3DBehaviorData.Remove(mode3DBehaviorData);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool Mode3DBehaviorDataExists(long id)
         {
-          return (_context.Mode3DBehaviorData?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Mode3DBehaviorData?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

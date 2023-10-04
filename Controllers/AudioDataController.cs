@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ProjectBackend.Models;
 
 namespace ProjectBackend.Controllers
@@ -107,7 +108,8 @@ namespace ProjectBackend.Controllers
             }
 
             //Need To Modify
-            var destination = "./Temp/Audios";
+            var destination = $"{ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath()}/Audios";
+            
             if(!Directory.Exists(destination))
             {
                 Directory.CreateDirectory(destination);
@@ -119,7 +121,7 @@ namespace ProjectBackend.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    audioData.FilePath = $"audio/{Path.GetFileName(filePath)}";
+                    audioData.FilePath = $"Audios/{Path.GetFileName(filePath)}";
                     _context.Add(audioData);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -145,7 +147,8 @@ namespace ProjectBackend.Controllers
             }
 
             // Need To Modify
-            ViewBag.AudioFile = Path.Combine("./Temp/Audios", Path.GetFileName(audioData.FilePath!));
+            ViewBag.AudioFile = Path.Combine($"{ConfigurationManager.Instance!.GetUnityDataBuildRelativePath()}/Audios", Path.GetFileName(audioData.FilePath!));
+            Console.WriteLine("Edit Audio file full path :" + ViewBag.AudioFile);
 
             return View(audioData);
         }
@@ -167,7 +170,7 @@ namespace ProjectBackend.Controllers
                 // Need To Modify
                 if(audioDataParamsHolder != null && audioDataParamsHolder.AudioFile != null)
                 {
-                    var filePath = Path.Combine("./Temp/Audios", Path.GetFileName(audioData.FilePath!));
+                    var filePath = Path.Combine($"{ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath()}/Audios", Path.GetFileName(audioData.FilePath!));
 
                     using(var fileStream = System.IO.File.Open(filePath, FileMode.OpenOrCreate))
                     {

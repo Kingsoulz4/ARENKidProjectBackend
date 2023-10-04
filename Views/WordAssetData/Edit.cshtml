@@ -97,6 +97,25 @@
                 }
             </div>
         </div>
+        <div class="btn-group">
+            <button type="button" class="dropdown-toggle btn btn-info" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="true">
+                List Video
+            </button>
+            <div class="dropdown-menu justify-content-center">
+                @{
+                    if (Model.Videos != null)
+                    {
+                        Console.WriteLine("dropdown-menu Video list " + Model.Videos!.Count);
+                        foreach (var vid in Model.Videos!)
+                        {
+                            <a asp-controller="VideoData" asp-action="Edit" asp-route-id="@vid.Id"> @vid.Name - @vid.Id </a>
+                            <br>
+                        }
+                    }
+                }
+            </div>
+        </div>
 
     </div>
 
@@ -108,7 +127,7 @@
 <div class="row">
     <div class="col-md-4">
         <h6 class="font-weight-bold">Config Flashcard</h6>
-        <img src="http://placehold.it/180" id="imgPreview" class="rounded" alt="...">
+        <img src="@ViewBag.FlashCardPath" id="imgPreview" class="rounded" alt="..." style="max-width: 180px;" >
         <form enctype="multipart/form-data" asp-action="ChangeFlashCard">
             <div class="form-group">
                 <input type="hidden" name="wordAssetID" value=@Model.ID />

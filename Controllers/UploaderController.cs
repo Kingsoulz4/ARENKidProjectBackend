@@ -174,6 +174,7 @@ public class UploaderController : Controller
             
                 // error during upload will be thrown when you await the task
                 Console.WriteLine("Download link:\n" + await task);
+                
             }
         }
         catch (Exception ex)
@@ -187,10 +188,10 @@ public class UploaderController : Controller
 
     //gs://arenkid-projectbe.appspot.com
 
-    private async void UploadFileToFirebaseStorage()
-    {
+    // private async void UploadFileToFirebaseStorage()
+    // {
 
-    }
+    // }
 
 
 }

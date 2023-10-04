@@ -12,49 +12,49 @@ public partial class MKWordData
     public long WordId { get; set; }
 
     [JsonProperty("text")]
-    public string Text { get; set; }
+    public string? Text { get; set; }
 
     [JsonProperty("name_display")]
-    public string NameDisplay { get; set; }
+    public string? NameDisplay { get; set; }
 
     [JsonProperty("path_word")]
-    public string PathWord { get; set; }
+    public string? PathWord { get; set; }
 
     [JsonProperty("sentence_type")]
     public long SentenceType { get; set; }
 
     [JsonProperty("image")]
-    public List<ImageMKData> Image { get; set; }
+    public List<ImageMKData>? Image { get; set; }
 
     [JsonProperty("video")]
-    public List<VideoMKData> Video { get; set; }
+    public List<VideoMKData>? Video { get; set; }
 
     [JsonProperty("audio")]
-    public List<AudioMKData> Audio { get; set; }
+    public List<AudioMKData>? Audio { get; set; }
 
     [JsonProperty("audio_effect")]
-    public List<AudioMKData> AudioEffect { get; set; }
+    public List<AudioMKData>? AudioEffect { get; set; }
 
     [JsonProperty("gaf")]
-    public object[] Gaf { get; set; }
+    public object[]? Gaf { get; set; }
 
     [JsonProperty("spine")]
-    public object[] Spine { get; set; }
+    public object[]? Spine { get; set; }
 
     [JsonProperty("animation")]
-    public object[] Animation { get; set; }
+    public object[]? Animation { get; set; }
 
     [JsonProperty("color")]
-    public ColorMKData Color { get; set; }
+    public ColorMKData? Color { get; set; }
 
     [JsonProperty("filter_word")]
-    public object[] FilterWord { get; set; }
+    public object[]? FilterWord { get; set; }
 
     [JsonProperty("phonic")]
-    public Phonic[] Phonic { get; set; }
+    public Phonic[]? Phonic { get; set; }
 
     [JsonProperty("list_not_game")]
-    public object[] ListNotGame { get; set; }
+    public object[]? ListNotGame { get; set; }
 }
 
 public partial class AudioMKData
@@ -63,10 +63,10 @@ public partial class AudioMKData
     public long Id { get; set; }
 
     [JsonProperty("link")]
-    public string Link { get; set; }
+    public string? Link { get; set; }
 
     [JsonProperty("file_path")]
-    public string FilePath { get; set; }
+    public string? FilePath { get; set; }
 
     [JsonProperty("duration")]
     public long Duration { get; set; }
@@ -75,16 +75,16 @@ public partial class AudioMKData
     public long VoicesId { get; set; }
 
     [JsonProperty("sync_data")]
-    public object[] SyncData { get; set; }
+    public object[]? SyncData { get; set; }
 }
 
 public partial class ColorMKData
 {
     [JsonProperty("text")]
-    public string Text { get; set; }
+    public string? Text { get; set; }
 
     [JsonProperty("highlight")]
-    public string Highlight { get; set; }
+    public string? Highlight { get; set; }
 }
 
 public partial class ImageMKData
@@ -93,22 +93,22 @@ public partial class ImageMKData
     public long Id { get; set; }
 
     [JsonProperty("link")]
-    public string Link { get; set; }
+    public string? Link { get; set; }
 
     [JsonProperty("file_path")]
-    public string FilePath { get; set; }
+    public string? FilePath { get; set; }
 
     [JsonProperty("images_categories_id")]
     public long ImagesCategoriesId { get; set; }
 
     [JsonProperty("file_type")]
-    public string FileType { get; set; }
+    public string? FileType { get; set; }
 }
 
 public partial class Phonic
 {
     [JsonProperty("audio")]
-    public long[] Audio { get; set; }
+    public long[]? Audio { get; set; }
 }
 
 public partial class VideoMKData
@@ -117,10 +117,10 @@ public partial class VideoMKData
     public long Id { get; set; }
 
     [JsonProperty("link")]
-    public string Link { get; set; }
+    public string? Link { get; set; }
 
     [JsonProperty("file_path")]
-    public string FilePath { get; set; }
+    public string? FilePath { get; set; }
 
     [JsonProperty("duration")]
     public long Duration { get; set; }

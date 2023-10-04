@@ -22,7 +22,7 @@ public class Model3DData
     public string? FileType { get; set; }
 
     [JsonProperty("behavior")]
-    public ICollection<Mode3DBehaviorData>? Behavior { get; set; }
+    public List<Mode3DBehaviorData>? Behavior { get; set; }
 
     [JsonIgnore]
     public ICollection<WordAssetData>? WordAssetDatas {get; set;}

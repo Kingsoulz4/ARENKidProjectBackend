@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -89,7 +90,7 @@ namespace ProjectBackend.Controllers
                 if (imageCreateDataHolder != null && imageCreateDataHolder.imageFile != null)
                 {
                     //Need To Modify
-                    var destinationDir = "./Temp/Images";
+                    var destinationDir = $"{ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath()}/Images";
                     if (!Directory.Exists(destinationDir))
                     {
                         Directory.CreateDirectory(destinationDir);
@@ -106,7 +107,7 @@ namespace ProjectBackend.Controllers
                     }
 
                     imageData.FilePath = Path.GetFileName(filePath);
-                    imageData.Link = $"images/{imageData.FilePath}";
+                    imageData.Link = $"Images/{imageData.FilePath}";
                 }
 
                 
@@ -130,6 +131,9 @@ namespace ProjectBackend.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.ImageFile = $"{ConfigurationManager.Instance!.GetUnityDataBuildRelativePath()}/{imageData.Link}";
+
             return View(imageData);
         }
 
@@ -138,7 +142,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,Name,Link,FilePath,ImageType")] ImageData imageData)
+        public async Task<IActionResult> Edit(long id, [Bind("Id,Name,Link,FilePath,ImageType")] ImageData imageData, [Bind("imageFile")] ImageCreateDataHolder imageCreateDataHolder)
         {
             if (id != imageData.Id)
             {

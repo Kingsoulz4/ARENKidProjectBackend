@@ -34,12 +34,70 @@
             </div>
         </form>
     </div>
+
+    <div class="col-md-4">
+        <div class="btn-group">
+            <button type="button" class="dropdown-toggle btn btn-info" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="true">
+                List Behavior
+            </button>
+            <div class="dropdown-menu justify-content-center">
+                @{
+
+                    if (Model.Behavior != null)
+                    {
+                        Console.WriteLine("dropdown-menu Audio list " + Model.Behavior!.Count);
+                        foreach (var be in Model.Behavior!)
+                        {
+                            <a asp-controller="Mode3DBehaviorData" asp-action="Edit" asp-route-id="@be.Id"> @be.Name - @be.Id </a>
+                            <br>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+
+
 </div>
+
+<!-- Config Behavior region -->
+<hr class="sidebar-divider">
+<div class="row">
+    <div class="col-md-4">
+        <h6 class="font-weight-bold">
+            Config Behavior
+        </h6>
+        <form asp-action="AddOrRemoveBehavior">
+
+            <div class="form-group">
+                <input type="hidden" name="model3DID" value=@Model.Id />
+            </div>
+
+            <div class="form-floating mb-3 form-group">
+                <label for="behaviorfloatingInput">Enter Behavior ID</label>
+                <input name="behaviorID" class="form-control" id="behaviorfloatingInput">
+
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </form>
+        <div>
+            <a asp-controller="Mode3DBehaviorData" asp-action="Create">Add New Behavior</a>
+        </div>
+    </div>
+</div>
+<hr class="sidebar-divider">
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
