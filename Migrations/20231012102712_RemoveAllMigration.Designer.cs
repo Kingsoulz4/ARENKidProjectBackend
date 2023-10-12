@@ -10,14 +10,74 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ProjectBackend.Migrations
 {
     [DbContext(typeof(MvcWordAssetsContext))]
-    [Migration("20230918083424_AddModelsImageAudioVideoWordAsset")]
-    partial class AddModelsImageAudioVideoWordAsset
+    [Migration("20231012102712_RemoveAllMigration")]
+    partial class RemoveAllMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.11");
+
+            modelBuilder.Entity("AnimationDataWordAssetData", b =>
+                {
+                    b.Property<long>("AnimationsID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("WordAssetDatasID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("AnimationsID", "WordAssetDatasID");
+
+                    b.HasIndex("WordAssetDatasID");
+
+                    b.ToTable("AnimationDataWordAssetData");
+                });
+
+            modelBuilder.Entity("AudioDataWordAssetData", b =>
+                {
+                    b.Property<long>("AudiosId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("WordAssetDatasID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("AudiosId", "WordAssetDatasID");
+
+                    b.HasIndex("WordAssetDatasID");
+
+                    b.ToTable("AudioDataWordAssetData");
+                });
+
+            modelBuilder.Entity("ImageDataWordAssetData", b =>
+                {
+                    b.Property<long>("ImagesId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("WordAssetDatasID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ImagesId", "WordAssetDatasID");
+
+                    b.HasIndex("WordAssetDatasID");
+
+                    b.ToTable("ImageDataWordAssetData");
+                });
+
+            modelBuilder.Entity("Model3DDataWordAssetData", b =>
+                {
+                    b.Property<long>("Model3DsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("WordAssetDatasID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Model3DsId", "WordAssetDatasID");
+
+                    b.HasIndex("WordAssetDatasID");
+
+                    b.ToTable("Model3DDataWordAssetData");
+                });
 
             modelBuilder.Entity("ProjectBackend.Models.AnimationData", b =>
                 {
@@ -28,12 +88,7 @@ namespace ProjectBackend.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<long?>("WordAssetDataID")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("ID");
-
-                    b.HasIndex("WordAssetDataID");
 
                     b.ToTable("AnimationData");
                 });
@@ -51,15 +106,12 @@ namespace ProjectBackend.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("FilePath")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<long?>("WordAssetDataID")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("WordAssetDataID");
 
                     b.ToTable("AudioData");
                 });
@@ -101,12 +153,7 @@ namespace ProjectBackend.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<long?>("WordAssetDataID")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("WordAssetDataID");
 
                     b.ToTable("ImageData");
                 });
@@ -154,12 +201,7 @@ namespace ProjectBackend.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<long?>("WordAssetDataID")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("WordAssetDataID");
 
                     b.ToTable("Model3DData");
                 });
@@ -213,15 +255,13 @@ namespace ProjectBackend.Migrations
                     b.Property<string>("Link")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("VideoType")
                         .HasColumnType("INTEGER");
 
-                    b.Property<long?>("WordAssetDataID")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("WordAssetDataID");
 
                     b.ToTable("VideoData");
                 });
@@ -253,7 +293,7 @@ namespace ProjectBackend.Migrations
 
             modelBuilder.Entity("ProjectBackend.Models.WordAssets", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -272,31 +312,85 @@ namespace ProjectBackend.Migrations
                     b.ToTable("WordAssets");
                 });
 
-            modelBuilder.Entity("ProjectBackend.Models.AnimationData", b =>
+            modelBuilder.Entity("VideoDataWordAssetData", b =>
                 {
-                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
-                        .WithMany("Animations")
-                        .HasForeignKey("WordAssetDataID");
+                    b.Property<int>("VideosId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("WordAssetDatasID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("VideosId", "WordAssetDatasID");
+
+                    b.HasIndex("WordAssetDatasID");
+
+                    b.ToTable("VideoDataWordAssetData");
                 });
 
-            modelBuilder.Entity("ProjectBackend.Models.AudioData", b =>
+            modelBuilder.Entity("AnimationDataWordAssetData", b =>
                 {
+                    b.HasOne("ProjectBackend.Models.AnimationData", null)
+                        .WithMany()
+                        .HasForeignKey("AnimationsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ProjectBackend.Models.WordAssetData", null)
-                        .WithMany("Audio")
-                        .HasForeignKey("WordAssetDataID");
+                        .WithMany()
+                        .HasForeignKey("WordAssetDatasID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("AudioDataWordAssetData", b =>
+                {
+                    b.HasOne("ProjectBackend.Models.AudioData", null)
+                        .WithMany()
+                        .HasForeignKey("AudiosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
+                        .WithMany()
+                        .HasForeignKey("WordAssetDatasID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ImageDataWordAssetData", b =>
+                {
+                    b.HasOne("ProjectBackend.Models.ImageData", null)
+                        .WithMany()
+                        .HasForeignKey("ImagesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
+                        .WithMany()
+                        .HasForeignKey("WordAssetDatasID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Model3DDataWordAssetData", b =>
+                {
+                    b.HasOne("ProjectBackend.Models.Model3DData", null)
+                        .WithMany()
+                        .HasForeignKey("Model3DsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
+                        .WithMany()
+                        .HasForeignKey("WordAssetDatasID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProjectBackend.Models.GameData", b =>
                 {
                     b.HasOne("ProjectBackend.Models.WordAssetData", null)
                         .WithMany("Games")
-                        .HasForeignKey("WordAssetDataID");
-                });
-
-            modelBuilder.Entity("ProjectBackend.Models.ImageData", b =>
-                {
-                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
-                        .WithMany("Image")
                         .HasForeignKey("WordAssetDataID");
                 });
 
@@ -311,13 +405,6 @@ namespace ProjectBackend.Migrations
                     b.Navigation("Model3DData");
                 });
 
-            modelBuilder.Entity("ProjectBackend.Models.Model3DData", b =>
-                {
-                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
-                        .WithMany("Model3D")
-                        .HasForeignKey("WordAssetDataID");
-                });
-
             modelBuilder.Entity("ProjectBackend.Models.SyncAudioData", b =>
                 {
                     b.HasOne("ProjectBackend.Models.AudioData", "AudioData")
@@ -327,18 +414,26 @@ namespace ProjectBackend.Migrations
                     b.Navigation("AudioData");
                 });
 
-            modelBuilder.Entity("ProjectBackend.Models.VideoData", b =>
-                {
-                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
-                        .WithMany("Video")
-                        .HasForeignKey("WordAssetDataID");
-                });
-
             modelBuilder.Entity("ProjectBackend.Models.WordAssetData", b =>
                 {
                     b.HasOne("ProjectBackend.Models.WordAssetData", null)
-                        .WithMany("FilterWord")
+                        .WithMany("FilterWords")
                         .HasForeignKey("WordAssetDataID");
+                });
+
+            modelBuilder.Entity("VideoDataWordAssetData", b =>
+                {
+                    b.HasOne("ProjectBackend.Models.VideoData", null)
+                        .WithMany()
+                        .HasForeignKey("VideosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjectBackend.Models.WordAssetData", null)
+                        .WithMany()
+                        .HasForeignKey("WordAssetDatasID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProjectBackend.Models.AudioData", b =>
@@ -353,19 +448,9 @@ namespace ProjectBackend.Migrations
 
             modelBuilder.Entity("ProjectBackend.Models.WordAssetData", b =>
                 {
-                    b.Navigation("Animations");
-
-                    b.Navigation("Audio");
-
-                    b.Navigation("FilterWord");
+                    b.Navigation("FilterWords");
 
                     b.Navigation("Games");
-
-                    b.Navigation("Image");
-
-                    b.Navigation("Model3D");
-
-                    b.Navigation("Video");
                 });
 #pragma warning restore 612, 618
         }

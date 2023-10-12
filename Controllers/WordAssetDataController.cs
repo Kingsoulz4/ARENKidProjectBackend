@@ -564,10 +564,13 @@ namespace ProjectBackend.Controllers
             if (_context.Model3DData != null && _context.Model3DData?.Count() != 0)
             {
                 var list_model = await _context.WordAssetData!
-                .Include(x => x.Audios)
-                .Include(x => x.Images)
-                .Include(x => x.Model3Ds)
-                .Include(x => x.Videos)
+                .Include(wordAssetData => wordAssetData.Audios)
+                .Include(wordAssetData => wordAssetData.Images)
+                .Include(wordAssetData => wordAssetData.Model3Ds)
+                    .ThenInclude(model3D => model3D.Behavior)
+                .Include(wordAssetData => wordAssetData.Videos)
+                
+                
                 .Where(x => x.ID == id)
                 .ToListAsync();
                 var data = JsonConvert.SerializeObject(list_model.FirstOrDefault());
@@ -655,10 +658,31 @@ namespace ProjectBackend.Controllers
         }
 
         [HttpGet]
-        [Route("WordAssetData/api/download/")] //Need To Modify
-        public async Task<IActionResult> DownloadWordAssetDataFile(string filename)
+        [Route("WordAssetData/api/download/{platform}/{fileName}")] //Need To Modify
+        public async Task<IActionResult> DownloadWordAssetDataFile(string platform, string fileName)
         {
-            var filepath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), $"{DataDirectoryNames.AssetBundlesDir}/Window", filename);
+            var filepath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), $"{DataDirectoryNames.AssetBundlesDir}/{platform}", fileName);
+
+            if(!System.IO.File.Exists(filepath))
+            {
+                return Problem("File Not Found");
+            }
+
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filepath, out var contenttype))
+            {
+                contenttype = "application/octet-stream";
+            }
+
+            var bytes = await System.IO.File.ReadAllBytesAsync(filepath);
+            return File(bytes, contenttype, Path.GetFileName(filepath));
+        }
+
+        [HttpGet]
+        [Route("WordAssetData/api/download/flashcard/{platform}")]
+        public async Task<IActionResult> DownloadFlashcard(string platform)
+        {
+            var filepath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), $"{DataDirectoryNames.AssetBundlesDir}/{platform}", "flashcards.unity3d");
 
             if(!System.IO.File.Exists(filepath))
             {

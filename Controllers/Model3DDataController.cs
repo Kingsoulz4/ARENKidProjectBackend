@@ -97,6 +97,12 @@ namespace ProjectBackend.Controllers
                 //var resultUpload = await UploadHelper.UpLoadFileToFirebaseStorage(fileToUpload, ApiKey, AuthEmail, AuthPassword, Bucket, "something/data");
 
                 var destinationDir = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), DataDirectoryNames.Model3DDataDir);
+
+                if(!Directory.Exists(destinationDir))
+                {
+                    Directory.CreateDirectory(destinationDir);
+                }
+
                 var filePath = Path.Combine(destinationDir, DateTime.Now.ToFileTimeUtc() + Path.GetExtension(fileToUpload.FileName));
 
                 using(var fileStream = System.IO.File.Open(filePath, FileMode.OpenOrCreate))
@@ -135,11 +141,16 @@ namespace ProjectBackend.Controllers
                 return NotFound();
             }
 
-            var model3DData = await _context.Model3DData.FindAsync(id);
+            var model3DData = _context.Model3DData
+            .Include(x=> x.Behavior)
+            .FirstOrDefault(x => x.Id == id);
             if (model3DData == null)
             {
                 return NotFound();
             }
+
+            await Task.Yield();
+
             return View(model3DData);
         }
 
@@ -223,7 +234,9 @@ namespace ProjectBackend.Controllers
         public async Task<IActionResult> AddOrRemoveBehavior(long model3DID, long behaviorID)
         {
 
-            var model3D = _context.Model3DData!.Where(x => x.Id == model3DID).Single();
+            var model3D = _context.Model3DData!
+            .Include(x => x.Behavior)
+            .Where(x => x.Id == model3DID).Single();
 
             var behavior = _context.Mode3DBehaviorData!.Where(x => x.Id == behaviorID).Single();
 
@@ -278,6 +291,11 @@ namespace ProjectBackend.Controllers
         public async Task<IActionResult> DownloadModel3DFile(string filename)
         {
             var filepath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), "Model3Ds", filename);
+
+            if(!System.IO.File.Exists(filepath))
+            {
+                return Problem("Not found");
+            }
 
             var provider = new FileExtensionContentTypeProvider();
             if (!provider.TryGetContentType(filepath, out var contenttype))
