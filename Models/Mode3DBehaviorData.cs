@@ -7,7 +7,9 @@ public class Mode3DBehaviorData
 {
     public long Id { get; set; }
 
+    [JsonIgnore]
     public long Model3DDataID {get; set;}
+    [JsonIgnore]
     public virtual Model3DData? Model3DData {get; set;}
 
     [JsonProperty("name")]
