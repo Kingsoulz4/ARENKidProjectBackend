@@ -6,6 +6,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.StaticFiles;
@@ -20,6 +22,7 @@ namespace ProjectBackend.Controllers
         public IFormFile? FlashCardImage { get; set; }
     }
 
+    [Authorize]
     public class WordAssetDataController : Controller
     {
         private readonly MvcWordAssetsContext _context;
@@ -640,6 +643,7 @@ namespace ProjectBackend.Controllers
 
 
         [HttpGet("WordAssetData/api/WordAssets/{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetWordAssetByID(long id)
         {
             if (_context.Model3DData != null && _context.Model3DData?.Count() != 0)

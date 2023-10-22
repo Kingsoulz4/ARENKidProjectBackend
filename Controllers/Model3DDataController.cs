@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.StaticFiles;
@@ -14,6 +15,7 @@ using ProjectBackend.Models;
 
 namespace ProjectBackend.Controllers
 {
+    [Authorize]
     public class Model3DDataController : Controller
     {
         private static string ApiKey = "AIzaSyCZBeMCx5PYzlkZepR74hOHj-FbXZlgVbQ";
