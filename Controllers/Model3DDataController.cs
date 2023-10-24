@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -88,7 +89,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,LinkDownload,FileType")] Model3DData model3DData, IFormFile fileToUpload)
+        public async Task<IActionResult> Create([Bind("Id,Name,LinkDownload,FileType, ScaleFactor")] Model3DData model3DData, IFormFile fileToUpload)
         {
             
 
@@ -161,7 +162,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,Name,LinkDownload,FileType")] Model3DData model3DData)
+        public async Task<IActionResult> Edit(long id, [Bind("Id,Name,LinkDownload,FileType, ScaleFactor")] Model3DData model3DData)
         {
             if (id != model3DData.Id)
             {
@@ -288,6 +289,7 @@ namespace ProjectBackend.Controllers
             return new JsonResult(NotFound());
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         [Route("Model3DData/api/download")]
         public async Task<IActionResult> DownloadModel3DFile(string filename)

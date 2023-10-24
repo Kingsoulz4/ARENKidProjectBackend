@@ -179,7 +179,7 @@ public class ClientAuthenticationController : ControllerBase
         return token;
     }
 
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost]
     [Route("api/update-level-age")]
     public async Task<IActionResult> UpdateLevelAge(int age)

@@ -10,6 +10,14 @@ public class WordAssetData
     [JsonProperty("text")]
     public string? Text { get; set; }
 
+    [JsonProperty("level_age")]
+    public int LevelAge {get; set;}
+
+    [JsonProperty("topic")]
+    public long TopicDataDataID {get; set;}
+    [JsonIgnore]
+    public virtual TopicData? Model3DData {get; set;}
+
     [JsonProperty("path_asset")]
     public string? PathAsset { get; set; }
 

@@ -1,0 +1,9 @@
+# Scaffold new model
+
+dotnet aspnet-codegenerator controller -name TopicDataController -m TopicData -dc MvcWordAssetsContext --relativeFolderPath Controllers --useDefaultLayout --referenceScriptLibraries --databaseProvider sqlite
+
+dotnet ef migrations add AddTopicAndAddAgeToWordAssetData --context MvcWordAssetsContext
+
+dotnet ef database update --context MvcWordAssetsContext
+
+ngrok http https://localhost:7253 

@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ProjectBackend.Migrations
 {
     [DbContext(typeof(MvcWordAssetsContext))]
-    [Migration("20231012102712_RemoveAllMigration")]
-    partial class RemoveAllMigration
+    [Migration("20231024085404_AddScaleFactorToModel3d")]
+    partial class AddScaleFactorToModel3d
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.11");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.12");
 
             modelBuilder.Entity("AnimationDataWordAssetData", b =>
                 {
@@ -201,6 +201,9 @@ namespace ProjectBackend.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
+                    b.Property<float>("ScaleFactor")
+                        .HasColumnType("REAL");
+
                     b.HasKey("Id");
 
                     b.ToTable("Model3DData");
@@ -240,6 +243,23 @@ namespace ProjectBackend.Migrations
                     b.ToTable("SyncAudioData");
                 });
 
+            modelBuilder.Entity("ProjectBackend.Models.TopicData", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ThumbPath")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TopicData");
+                });
+
             modelBuilder.Entity("ProjectBackend.Models.VideoData", b =>
                 {
                     b.Property<int>("Id")
@@ -272,6 +292,12 @@ namespace ProjectBackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("LevelAge")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Model3DDataId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("PathAsset")
                         .HasColumnType("TEXT");
 
@@ -281,10 +307,15 @@ namespace ProjectBackend.Migrations
                     b.Property<string>("Text")
                         .HasColumnType("TEXT");
 
+                    b.Property<long>("TopicDataDataID")
+                        .HasColumnType("INTEGER");
+
                     b.Property<long?>("WordAssetDataID")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("Model3DDataId");
 
                     b.HasIndex("WordAssetDataID");
 
@@ -416,9 +447,15 @@ namespace ProjectBackend.Migrations
 
             modelBuilder.Entity("ProjectBackend.Models.WordAssetData", b =>
                 {
+                    b.HasOne("ProjectBackend.Models.TopicData", "Model3DData")
+                        .WithMany("WordAssetDatas")
+                        .HasForeignKey("Model3DDataId");
+
                     b.HasOne("ProjectBackend.Models.WordAssetData", null)
                         .WithMany("FilterWords")
                         .HasForeignKey("WordAssetDataID");
+
+                    b.Navigation("Model3DData");
                 });
 
             modelBuilder.Entity("VideoDataWordAssetData", b =>
@@ -444,6 +481,11 @@ namespace ProjectBackend.Migrations
             modelBuilder.Entity("ProjectBackend.Models.Model3DData", b =>
                 {
                     b.Navigation("Behavior");
+                });
+
+            modelBuilder.Entity("ProjectBackend.Models.TopicData", b =>
+                {
+                    b.Navigation("WordAssetDatas");
                 });
 
             modelBuilder.Entity("ProjectBackend.Models.WordAssetData", b =>

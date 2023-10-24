@@ -661,6 +661,7 @@ namespace ProjectBackend.Controllers
             return new JsonResult(NotFound());
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         [Route("WordAssetData/api/download/{platform}/{fileName}")] //Need To Modify
         public async Task<IActionResult> DownloadWordAssetDataFile(string platform, string fileName)
@@ -682,11 +683,36 @@ namespace ProjectBackend.Controllers
             return File(bytes, contenttype, Path.GetFileName(filepath));
         }
 
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         [Route("WordAssetData/api/download/flashcard/{platform}")]
-        public async Task<IActionResult> DownloadFlashcard(string platform)
+        public async Task<IActionResult> DownloadFlashcardBundle(string platform
+        )
         {
             var filepath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), $"{DataDirectoryNames.AssetBundlesDir}/{platform}", "flashcards.unity3d");
+
+            if(!System.IO.File.Exists(filepath))
+            {
+                return Problem("File Not Found");
+            }
+
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filepath, out var contenttype))
+            {
+                contenttype = "application/octet-stream";
+            }
+
+            var bytes = await System.IO.File.ReadAllBytesAsync(filepath);
+            return File(bytes, contenttype, Path.GetFileName(filepath));
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet]
+        [Route("WordAssetData/api/download/flashcard/zip")]
+        public async Task<IActionResult> DownloadFlashcardZip()
+        {
+            var filepath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), "Flashcards.zip");
 
             if(!System.IO.File.Exists(filepath))
             {

@@ -21,6 +21,9 @@ public class Model3DData
     [JsonProperty("file_type")]
     public string? FileType { get; set; }
 
+    [JsonProperty("scale_factor")]
+    public float ScaleFactor {get; set;}
+
     [JsonProperty("behavior")]
     public List<Mode3DBehaviorData>? Behavior { get; set; }
 

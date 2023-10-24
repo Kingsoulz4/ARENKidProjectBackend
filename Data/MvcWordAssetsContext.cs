@@ -25,4 +25,6 @@ using ProjectBackend.Models;
         public DbSet<ProjectBackend.Models.WordAssetData>? WordAssetData { get; set; }
 
         public DbSet<ProjectBackend.Models.ImageData>? ImageData { get; set; }
+
+        public DbSet<ProjectBackend.Models.TopicData> TopicData { get; set; } = default!;
     }
