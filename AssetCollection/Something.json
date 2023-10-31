@@ -1,0 +1,32 @@
+{
+    "category": "conversation",
+    "type": "3D",
+    "character": [1, 2],
+    "word_reference": [101, 102, 222],
+    "main_content": [
+        {
+            "character": 1,
+            "behavior": "something",
+            "chat": "Hi how are you?",
+            "word_id": 1,
+            "gap_answer_correct": "",
+            "gap_answer_disturb": [""]
+        },
+        {
+            "character": 2,
+            "behavior": "sometime",
+            "chat": "I'm good and how about you?",
+            "word_id": 1,
+            "gap_answer_correct": "",
+            "gap_answer_disturb": [""]
+        },
+        {
+            "character": 1,
+            "behavior": "something",
+            "chat": "Just a little be __?",
+            "word_id": 1,
+            "gap_answer_correct": "nervous",
+            "gap_answer_disturb": ["nervous", "happy"]
+        }
+    ]
+}

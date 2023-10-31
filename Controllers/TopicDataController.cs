@@ -55,7 +55,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,ThumbPath")] TopicData topicData)
+        public async Task<IActionResult> Create([Bind("Id,Name,Thumb")] TopicData topicData)
         {
             if (ModelState.IsValid)
             {
@@ -87,7 +87,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,ThumbPath")] TopicData topicData)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,Thumb")] TopicData topicData)
         {
             if (id != topicData.Id)
             {

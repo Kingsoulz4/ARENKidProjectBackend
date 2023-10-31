@@ -19,11 +19,11 @@
                 <input asp-for="Text" class="form-control" />
                 <span asp-validation-for="Text" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            @* <div class="form-group">
                 <label asp-for="PathAsset" class="control-label"></label>
                 <input asp-for="PathAsset" class="form-control" />
                 <span asp-validation-for="PathAsset" class="text-danger"></span>
-            </div>
+            </div> *@
             <div class="form-group">
                 <label asp-for="SentenceType" class="control-label"></label>
                 <input asp-for="SentenceType" class="form-control" />
@@ -34,6 +34,13 @@
                 <input type='file' onchange="readURL(this);" name= "FlashCardImage"/>
                 <img id="imgPrevFlashcard" src="http://placehold.it/180" alt="your image" style="max-width: 180px;"/>
             </div>
+
+            <div class="form-group">
+                <label  class="control-label">Build AssetBundle</label>
+                <input type="checkbox" value="Build AssetBundle" name="IsNeedToBuildAssetBundle" />
+            </div>
+
+            
 
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

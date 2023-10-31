@@ -18,6 +18,12 @@ public class Model3DData
     [JsonProperty("link_download")]
     public string? LinkDownload { get; set; }
 
+    [JsonProperty("location")]
+    public string? Location {get; set;}
+
+    [JsonProperty("name_asset")]
+    public string? NameAsset {get; set;}
+
     [JsonProperty("file_type")]
     public string? FileType { get; set; }
 

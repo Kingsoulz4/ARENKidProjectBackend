@@ -43,5 +43,8 @@ public class WordAssetData
     public List<WordAssetData>? FilterWords { get; set; }
 
     [JsonProperty("games")]
-    public List<GameData>? Games { get; set; }
+    public List<GameLessonData>? Games { get; set; }
+
+    [JsonProperty("stories")]
+    public List<StoryData>? Stories {get; set;}
 }

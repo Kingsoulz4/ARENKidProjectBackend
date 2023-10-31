@@ -155,6 +155,25 @@
                 </div>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseGameLesson" aria-expanded="true"
+                    aria-controls="collapseGameLesson">
+                    <i class="fa-solid fa-gamepad"></i>
+                    <span>Game Lessons</span>
+                </a>
+                <div id="collapseGameLesson" class="collapse show" aria-labelledby="headingPages"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Game Lessons Config</h6>
+                        <a class="collapse-item" asp-controller="GameLessonData" asp-action="Create">Create New</a>
+                        <div class="collapse-divider"></div>
+                        <h6 class="collapse-header">Game Lessons Inspect</h6>
+                        <a class="collapse-item" asp-controller="GameLessonData" asp-action="Index">List Asset</a>
+                        <div class="collapse-divider"></div>
+                    </div>
+                </div>
+            </li>
+
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 

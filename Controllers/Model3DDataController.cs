@@ -89,10 +89,10 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,LinkDownload,FileType, ScaleFactor")] Model3DData model3DData, IFormFile fileToUpload)
+        public async Task<IActionResult> Create([Bind("Id,Name,LinkDownload,FileType, ScaleFactor, Location, NameAsset")] Model3DData model3DData, IFormFile fileToUpload)
         {
-            
-
+            Console.WriteLine("Model valid " + ModelState.IsValid);
+            //Console.WriteLine("Model valid " + ModelState.);
             if (ModelState.IsValid)
             {
                 bool uploadDone = false;
@@ -101,33 +101,37 @@ namespace ProjectBackend.Controllers
 
                 var destinationDir = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), DataDirectoryNames.Model3DDataDir);
 
-                if(!Directory.Exists(destinationDir))
+                if (!Directory.Exists(destinationDir))
                 {
                     Directory.CreateDirectory(destinationDir);
                 }
 
-                var filePath = Path.Combine(destinationDir, DateTime.Now.ToFileTimeUtc() + Path.GetExtension(fileToUpload.FileName));
-
-                using(var fileStream = System.IO.File.Open(filePath, FileMode.OpenOrCreate))
+                if (fileToUpload != null)
                 {
-                    await fileToUpload.CopyToAsync(fileStream);
-                    uploadDone = true;
+
+                    var filePath = Path.Combine(destinationDir, DateTime.Now.ToFileTimeUtc() + Path.GetExtension(fileToUpload.FileName));
+
+                    using (var fileStream = System.IO.File.Open(filePath, FileMode.OpenOrCreate))
+                    {
+                        await fileToUpload.CopyToAsync(fileStream);
+                        uploadDone = true;
+                    }
+
+                    while (!uploadDone) ;
+
+                    //Need To Modify
+                    var endPoint = $"https://localhost:7253/Model3DData/api/download?fileName={Path.GetFileName(filePath)}";
+
+                    // Console.WriteLine("Upload res: " + resultUpload.ToJToken());
+                    // var jsonTokRes = resultUpload.ToJToken();
+                    // var val = jsonTokRes.SelectToken("Value");
+                    // var linkDownload = val!.Value<string>("message");
+                    var linkDownload = endPoint;
+                    Console.WriteLine("ModelDDataController Download link: " + linkDownload);
+
+                    model3DData.FileType = Path.GetExtension(fileToUpload.FileName);
+                    model3DData.LinkDownload = linkDownload;
                 }
-
-                while(!uploadDone); 
-
-                //Need To Modify
-                var endPoint = $"https://localhost:7253/Model3DData/api/download?fileName={Path.GetFileName(filePath)}";
-
-                // Console.WriteLine("Upload res: " + resultUpload.ToJToken());
-                // var jsonTokRes = resultUpload.ToJToken();
-                // var val = jsonTokRes.SelectToken("Value");
-                // var linkDownload = val!.Value<string>("message");
-                var linkDownload = endPoint;
-                Console.WriteLine("ModelDDataController Download link: " + linkDownload);
-
-                model3DData.FileType = Path.GetExtension(fileToUpload.FileName);
-                model3DData.LinkDownload = linkDownload;
 
                 _context.Add(model3DData);
                 await _context.SaveChangesAsync();
@@ -145,7 +149,7 @@ namespace ProjectBackend.Controllers
             }
 
             var model3DData = _context.Model3DData
-            .Include(x=> x.Behavior)
+            .Include(x => x.Behavior)
             .FirstOrDefault(x => x.Id == id);
             if (model3DData == null)
             {
@@ -162,7 +166,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,Name,LinkDownload,FileType, ScaleFactor")] Model3DData model3DData)
+        public async Task<IActionResult> Edit(long id, [Bind("Id,Name,LinkDownload,FileType, ScaleFactor, Location, NameAsset")] Model3DData model3DData)
         {
             if (id != model3DData.Id)
             {
@@ -296,7 +300,7 @@ namespace ProjectBackend.Controllers
         {
             var filepath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), "Model3Ds", filename);
 
-            if(!System.IO.File.Exists(filepath))
+            if (!System.IO.File.Exists(filepath))
             {
                 return Problem("Not found");
             }
@@ -310,6 +314,53 @@ namespace ProjectBackend.Controllers
             var bytes = await System.IO.File.ReadAllBytesAsync(filepath);
             return File(bytes, contenttype, Path.GetFileName(filepath));
         }
+
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("Model3DData/api/download/bundle/{platform}")]
+        public async Task<IActionResult> DownloadModel3DAssetBundle(string platform)
+        {
+            var filepath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), $"{DataDirectoryNames.AssetBundlesDir}/{platform}", "model3d.unity3d");
+
+            if (!System.IO.File.Exists(filepath))
+            {
+                return Problem("File Not Found");
+            }
+
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filepath, out var contenttype))
+            {
+                contenttype = "application/octet-stream";
+            }
+
+            var bytes = await System.IO.File.ReadAllBytesAsync(filepath);
+            return File(bytes, contenttype, Path.GetFileName(filepath));
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("Model3DData/api/get_info/{id}")]
+        public async Task<IActionResult> GetModel3DDataByID(long id)
+        {
+            var model3DData = _context.Model3DData!
+            .Include(x => x.Behavior)
+            .Where(x => x.Id == id)
+            .Single()
+            ;
+            if (model3DData == null)
+            {
+                return NotFound();
+            }
+
+            await Task.Yield();
+
+            return new OkObjectResult(new { data = JsonConvert.SerializeObject(model3DData) });
+        }
+
+        
+
+
 
     }
 }

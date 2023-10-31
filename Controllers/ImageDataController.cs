@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ProjectBackend.Models;
 
 namespace ProjectBackend.Controllers
@@ -214,6 +217,54 @@ namespace ProjectBackend.Controllers
         private bool ImageDataExists(long id)
         {
             return (_context.ImageData?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("ImageData/api/data/{id}")]
+        public async Task<IActionResult> GetImageDataById(long id)
+        {
+            var imageDataData = _context.ImageData!
+            .Where(x => x.Id == id)
+            .Single()
+            ;
+            if (imageDataData == null)
+            {
+                return NotFound();
+            }
+
+            await Task.Yield();
+
+            return new OkObjectResult(new { data = JsonConvert.SerializeObject(imageDataData) });
+        }
+
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("ImageData/api/download/{id}")]
+        public async Task<IActionResult> DownloadImageFile(long id)
+        {
+            var imageDataData = _context.ImageData!
+            .Where(x => x.Id == id)
+            .Single()
+            ;
+
+            var filepath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), imageDataData.Link!);
+
+            if (!System.IO.File.Exists(filepath))
+            {
+                return Problem("Not found");
+            }
+
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filepath, out var contenttype))
+            {
+                contenttype = "application/octet-stream";
+            }
+
+            var bytes = await System.IO.File.ReadAllBytesAsync(filepath);
+            return File(bytes, contenttype, Path.GetFileName(filepath));
         }
     }
 }

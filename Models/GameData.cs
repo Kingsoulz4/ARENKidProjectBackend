@@ -1,11 +1,16 @@
+using Newtonsoft.Json;
+
 namespace ProjectBackend.Models;
 
 public class GameData
 {
-    public long ID {get; set;}
-    public string? Name {get; set;}
+    [JsonProperty("id")]
+    public long ID { get; set; }
+    [JsonProperty("name")]
+    public string? Name { get; set; }
+    [JsonProperty("type")]
+    public string? Type { get; set; }
+    [JsonProperty("thumb")]
+    public long Thumb { get; set; }
 
-    public List<long>? WordTeaching {get; set;}
-
-    public List<long>? WordDisturbing {get; set;}
 }

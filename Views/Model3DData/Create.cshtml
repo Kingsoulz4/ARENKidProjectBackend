@@ -1,7 +1,7 @@
 @model ProjectBackend.Models.Model3DData
 
 @{
-    
+
     ViewData["Title"] = "Create";
     Layout = "/Views/Shared/_AdminLayout.cshtml";
 }
@@ -12,7 +12,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form enctype="multipart/form-data" asp-action="Create" >
+        <form enctype="multipart/form-data" asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -24,22 +24,37 @@
                 <input asp-for="ScaleFactor" class="form-control" />
                 <span asp-validation-for="ScaleFactor" class="text-danger"></span>
             </div>
+
+            <div class="form-group">
+                <label asp-for="NameAsset" class="control-label"></label>
+                <input asp-for="NameAsset" class="form-control" />
+                <span asp-validation-for="NameAsset" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Location" class="control-label"></label>
+                <select asp-for="Location">
+                    <option value="AssetBundle">AssetBundle</option>
+                    <option value="File">File</option>
+                </select>
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
             @* <div class="form-group">
-                <label asp-for="LinkDownload" class="control-label"></label>
-                <input asp-for="LinkDownload" class="form-control" />
-                <span asp-validation-for="LinkDownload" class="text-danger"></span>
+            <label asp-for="LinkDownload" class="control-label"></label>
+            <input asp-for="LinkDownload" class="form-control" />
+            <span asp-validation-for="LinkDownload" class="text-danger"></span>
             </div> *@
             @* <div class="form-group">
-                <label asp-for="FileType" class="control-label"></label>
-                <input asp-for="FileType" class="form-control" />
-                <span asp-validation-for="FileType" class="text-danger"></span>
+            <label asp-for="FileType" class="control-label"></label>
+            <input asp-for="FileType" class="form-control" />
+            <span asp-validation-for="FileType" class="text-danger"></span>
             </div> *@
 
             <span>Select your file </span>
             <input type="file" name="fileToUpload" />
             @* <input type="submit" value="Upload"/> *@
 
-            <br/>
+            <br />
             <span> @Html.Raw(ViewBag.Message)</span>
 
             <div class="form-group">
@@ -47,14 +62,15 @@
             </div>
         </form>
 
-        @* <form method="post" enctype="multipart/form-data" asp-controller="Model3DData" asp-action="UploadModel3DToCloud">
-            <span>Select your file </span>
-            <input type="file" name="fileToUpload" />
-            <input type="submit" value="Upload"/>
+        @* <form method="post" enctype="multipart/form-data" asp-controller="Model3DData"
+        asp-action="UploadModel3DToCloud">
+        <span>Select your file </span>
+        <input type="file" name="fileToUpload" />
+        <input type="submit" value="Upload"/>
 
-            <br/>
-            <span> @Html.Raw(ViewBag.Message)</span>
-        
+        <br/>
+        <span> @Html.Raw(ViewBag.Message)</span>
+
         </form> *@
     </div>
 </div>
@@ -64,5 +80,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

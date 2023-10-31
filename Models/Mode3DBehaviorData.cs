@@ -21,6 +21,9 @@ public class Mode3DBehaviorData
     [JsonProperty("audio")]
     public long Audio { get; set; }
 
+    [JsonProperty("word_id")]
+    public long WordAssetID {get; set;}
+
     [JsonProperty("action_type")]
     public long ActionType { get; set; }
 

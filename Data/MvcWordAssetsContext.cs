@@ -27,4 +27,10 @@ using ProjectBackend.Models;
         public DbSet<ProjectBackend.Models.ImageData>? ImageData { get; set; }
 
         public DbSet<ProjectBackend.Models.TopicData> TopicData { get; set; } = default!;
+
+        public DbSet<ProjectBackend.Models.GameData> GameData { get; set; } = default!;
+
+        public DbSet<ProjectBackend.Models.GameLessonData> GameLessonData { get; set; } = default!;
+
+        public DbSet<ProjectBackend.Models.StoryData> StoryData { get; set; } = default!;
     }

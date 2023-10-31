@@ -19,11 +19,11 @@
                 <input asp-for="Text" class="form-control" />
                 <span asp-validation-for="Text" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            @* <div class="form-group">
                 <label asp-for="PathAsset" class="control-label"></label>
                 <input asp-for="PathAsset" class="form-control" />
                 <span asp-validation-for="PathAsset" class="text-danger"></span>
-            </div>
+            </div> *@
             <div class="form-group">
                 <label asp-for="SentenceType" class="control-label"></label>
                 <input asp-for="SentenceType" class="form-control" />
@@ -110,6 +110,44 @@
                         foreach (var vid in Model.Videos!)
                         {
                             <a asp-controller="VideoData" asp-action="Edit" asp-route-id="@vid.Id"> @vid.Name - @vid.Id </a>
+                            <br>
+                        }
+                    }
+                }
+            </div>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="dropdown-toggle btn btn-info" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="true">
+                List Game
+            </button>
+            <div class="dropdown-menu justify-content-center">
+                @{
+                    if (Model.Games != null)
+                    {
+                        Console.WriteLine("dropdown-menu Game list " + Model.Games!.Count);
+                        foreach (var game in Model.Games!)
+                        {
+                            <a asp-controller="GameLessonData" asp-action="Edit" asp-route-id="@game.Id"> @game.GameData.Name - @game.Id - @game.GameData.ID </a>
+                            <br>
+                        }
+                    }
+                }
+            </div>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="dropdown-toggle btn btn-info" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="true">
+                List Story
+            </button>
+            <div class="dropdown-menu justify-content-center">
+                @{
+                    if (Model.Stories != null)
+                    {
+                        Console.WriteLine("dropdown-menu Story list " + Model.Stories!.Count);
+                        foreach (var stry in Model.Stories!)
+                        {
+                            <a asp-controller="StoryData" asp-action="Edit" asp-route-id="@stry.Id"> @stry.Name - @stry.Id </a>
                             <br>
                         }
                     }
@@ -260,6 +298,35 @@
         </form>
         <div>
             <a asp-controller="VideoData" asp-action="Create">Add New Video</a>
+        </div>
+    </div>
+</div>
+<hr class="sidebar-divider">
+
+<!-- Config Story region -->
+<div class="row">
+    <div class="col-md-4">
+        <h6 class="font-weight-bold">
+            Config Story
+        </h6>
+        <form asp-action="AddOrRemoveStory">
+
+            <div class="form-group">
+                <input type="hidden" name="wordAssetID" value=@Model.ID />
+            </div>
+
+            <div class="form-floating mb-3">
+                <label for="StoryIDFloatingInput">Enter Story ID</label>
+                <input name="storyID" class="form-control" id="StoryIDFloatingInput">
+
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </form>
+        <div>
+            <a asp-controller="StoryData" asp-action="Create">Add New Story</a>
         </div>
     </div>
 </div>

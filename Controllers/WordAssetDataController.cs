@@ -19,6 +19,8 @@ namespace ProjectBackend.Controllers
 {
     public class WordAssetDataCreateParamsHolder
     {
+
+        public bool IsNeedToBuildAssetBundle {get; set;}
         public IFormFile? FlashCardImage { get; set; }
     }
 
@@ -92,12 +94,11 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Text,PathAsset,SentenceType")] WordAssetData wordAssetData, [Bind("FlashCardImage")] WordAssetDataCreateParamsHolder createStructData)
+        public async Task<IActionResult> Create([Bind("ID,Text,PathAsset,SentenceType")] WordAssetData wordAssetData, [Bind("IsNeedToBuildAssetBundle, FlashCardImage")] WordAssetDataCreateParamsHolder createStructData)
         {
             if (ModelState.IsValid)
             {
                 // Need To Modify
-
                 var doneFile1 = false;
                 var doneFile2 = false;
 
@@ -161,6 +162,11 @@ namespace ProjectBackend.Controllers
                         doneFile2 = true;
                     }
                 }
+                else
+                {
+                    doneFile1 = true;
+                    doneFile2 = true;
+                }
 
                 // _context.Add(wordAssetData);
 
@@ -168,7 +174,11 @@ namespace ProjectBackend.Controllers
 
                 UpdateConfigFile(wordAssetData.ID);
 
-                AssetBuilder.ImportAssetAndBuildAssetBundle();
+                if(createStructData!.IsNeedToBuildAssetBundle)
+                {
+                    Console.WriteLine("Build AssetBundle");
+                    AssetBuilder.ImportAssetAndBuildAssetBundle();
+                }
 
                 //Need To Modify
                 var endPoint = $"https://localhost:7253/WordAssetData/api/download?fileName={wordAssetData.ID}.unity3d";;
@@ -203,7 +213,10 @@ namespace ProjectBackend.Controllers
             .Include(x => x.Model3Ds)
             .Include(x => x.Audios)
             .Include(x => x.Images)
-            .Include(x => x.Videos);
+            .Include(x => x.Videos)
+            .Include(x => x.Games)
+                .ThenInclude(y => y.GameData)
+            .Include(x => x.Stories);
             var wordAssetData = st.FirstOrDefault(m => m.ID == id);
             if (wordAssetData == null)
             {
@@ -214,7 +227,7 @@ namespace ProjectBackend.Controllers
 
             // Need To Modify
             ViewData["Model3DDataID"] = new SelectList(_context.Model3DData, "Id", "Id");
-            ViewBag.FlashCardPath = $"{ConfigurationManager.Instance!.GetUnityDataBuildRelativePath()}/{flashCard!.Link}";
+            ViewBag.FlashCardPath = $"{ConfigurationManager.Instance!.GetUnityDataBuildRelativePath()}/{flashCard?.Link}";
 
             await Task.Yield();
 
@@ -337,13 +350,25 @@ namespace ProjectBackend.Controllers
         {
             Console.WriteLine("AddOrRemove3DModel " + wordAssetID);
 
-            var wordAssetToUpdate = _context.WordAssetData!.Where(x => x.ID == wordAssetID).Single();
+            var wordAssetToUpdate = _context.WordAssetData!.Where(x => x.ID == wordAssetID)
+            .Include(x=>x.Model3Ds)
+            .Single();
 
             Console.WriteLine($"AddOrRemove3DModel wordAssetToUpdate text = {wordAssetToUpdate.Text}");
 
             if (wordAssetToUpdate.Model3Ds == null)
             {
                 wordAssetToUpdate.Model3Ds = new();
+            }
+
+            var modelBelongTo = wordAssetToUpdate.Model3Ds.FirstOrDefault(m => m.Id == model3DID);
+
+            if (modelBelongTo != null && modelBelongTo != default)
+            {
+                wordAssetToUpdate.Model3Ds.Remove(modelBelongTo);
+                Console.WriteLine("AddOrRemove3DModel Removed " + wordAssetToUpdate.Model3Ds.Count);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
             }
 
             var model3D = _context.Model3DData!.Where(x => x.Id == model3DID).Single();
@@ -355,18 +380,50 @@ namespace ProjectBackend.Controllers
                 return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
             }
 
-            var modelBelongTo = wordAssetToUpdate.Model3Ds.FirstOrDefault(m => m.Id == model3DID);
+            await Task.Yield();
+            return NotFound();
+            
+        }
+        public async Task<ActionResult> AddOrRemoveStory(long wordAssetID, long storyID)
+        {
+            Console.WriteLine("AddOrRemoveStory " + wordAssetID);
 
-            if (modelBelongTo != null && modelBelongTo != default)
+            var wordAssetToUpdate = _context.WordAssetData!.Where(x => x.ID == wordAssetID)
+            .Include(x=>x.Stories)
+            .Single();
+
+            Console.WriteLine($"AddOrRemoveStory wordAssetToUpdate text = {wordAssetToUpdate.Text}");
+
+            if (wordAssetToUpdate.Stories == null)
             {
-                wordAssetToUpdate.Model3Ds.Remove(modelBelongTo);
-                Console.WriteLine("AddOrRemove3DModel Removed " + wordAssetToUpdate.Model3Ds.Count);
+                wordAssetToUpdate.Stories = new();
+            }
+
+            var storyBelongTo = wordAssetToUpdate.Stories.FirstOrDefault(m => m.Id == storyID);
+
+            if (storyBelongTo != null && storyBelongTo != default)
+            {
+                wordAssetToUpdate.Stories.Remove(storyBelongTo);
+                Console.WriteLine("AddOrRemoveStory Removed " + wordAssetToUpdate.Stories.Count);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
+            }
+
+            var storyData = _context.StoryData!.Where(x => x.Id == storyID).Single();
+            if (storyData != null || storyData != default)
+            {
+                wordAssetToUpdate.Stories.Add(storyData);
+                Console.WriteLine("AddOrRemoveStory Added " + wordAssetToUpdate.Stories.Count);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
             }
 
             await Task.Yield();
-
-            return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
+            return NotFound();
+            
         }
+
+
         public async Task<ActionResult> AddOrRemoveImage(long wordAssetID, long imageID)
         {
             Console.WriteLine("AddOrRemoveAudio " + imageID);
@@ -564,28 +621,27 @@ namespace ProjectBackend.Controllers
 
         private async void UpdateConfigFile(long id)
         {
-            if (_context.Model3DData != null && _context.Model3DData?.Count() != 0)
+            var list_model = await _context.WordAssetData!
+            .Include(wordAssetData => wordAssetData.Audios)
+            .Include(wordAssetData => wordAssetData.Images)
+            .Include(wordAssetData => wordAssetData.Model3Ds)
+                .ThenInclude(model3D => model3D.Behavior)
+            .Include(wordAssetData => wordAssetData.Videos)
+            .Include(WordAssetData => WordAssetData.Games)
+            .Include(WordAssetData => WordAssetData.Stories)
+            
+            .Where(x => x.ID == id)
+            .ToListAsync();
+            var data = JsonConvert.SerializeObject(list_model.FirstOrDefault());
+
+            var filePath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), $"{DataDirectoryNames.WordAssetsDir}/{id}/{id}.json");
+
+            using (var fileStream = System.IO.File.Open(filePath, FileMode.OpenOrCreate))
             {
-                var list_model = await _context.WordAssetData!
-                .Include(wordAssetData => wordAssetData.Audios)
-                .Include(wordAssetData => wordAssetData.Images)
-                .Include(wordAssetData => wordAssetData.Model3Ds)
-                    .ThenInclude(model3D => model3D.Behavior)
-                .Include(wordAssetData => wordAssetData.Videos)
-                
-                
-                .Where(x => x.ID == id)
-                .ToListAsync();
-                var data = JsonConvert.SerializeObject(list_model.FirstOrDefault());
-
-                var filePath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), $"{DataDirectoryNames.WordAssetsDir}/{id}/{id}.json");
-
-                using (var fileStream = System.IO.File.Open(filePath, FileMode.OpenOrCreate))
-                {
-                    byte[] info = new UTF8Encoding(true).GetBytes(data);
-                    await fileStream.WriteAsync(info, 0, info.Length);
-                }
+                byte[] info = new UTF8Encoding(true).GetBytes(data);
+                await fileStream.WriteAsync(info, 0, info.Length);
             }
+            
         }
 
         private void ConvertOldData(string jsonOldData)
@@ -653,6 +709,8 @@ namespace ProjectBackend.Controllers
                 .Include(x => x.Images)
                 .Include(x => x.Model3Ds)
                 .Include(x => x.Videos)
+                .Include(x => x.Games)
+                .Include(x => x.Stories)
                 .Where(x => x.ID == id)
                 .ToListAsync();
                 return new OkObjectResult(new { data = JsonConvert.SerializeObject(list_model) });
