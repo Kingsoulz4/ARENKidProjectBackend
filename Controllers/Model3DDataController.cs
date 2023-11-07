@@ -16,6 +16,12 @@ using ProjectBackend.Models;
 
 namespace ProjectBackend.Controllers
 {
+
+    public class Model3DDataParamsHolder
+    {
+        public IFormFile? File3DModel { get; set; }
+    }
+
     [Authorize]
     public class Model3DDataController : Controller
     {
@@ -89,7 +95,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,LinkDownload,FileType, ScaleFactor, Location, NameAsset")] Model3DData model3DData, IFormFile fileToUpload)
+        public async Task<IActionResult> Create([Bind("Id,Name,LinkDownload,FileType, ScaleFactor, Location, NameAsset")] Model3DData model3DData, [Bind("File3DModel")] Model3DDataParamsHolder paramsHolder)
         {
             Console.WriteLine("Model valid " + ModelState.IsValid);
             //Console.WriteLine("Model valid " + ModelState.);
@@ -105,6 +111,8 @@ namespace ProjectBackend.Controllers
                 {
                     Directory.CreateDirectory(destinationDir);
                 }
+
+                var fileToUpload = paramsHolder.File3DModel;
 
                 if (fileToUpload != null)
                 {

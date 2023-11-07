@@ -14,9 +14,9 @@ public class WordAssetData
     public int LevelAge {get; set;}
 
     [JsonProperty("topic")]
-    public long TopicDataDataID {get; set;}
+    public long TopicDataID {get; set;}
     [JsonIgnore]
-    public virtual TopicData? Model3DData {get; set;}
+    public virtual TopicData? TopicData {get; set;}
 
     [JsonProperty("path_asset")]
     public string? PathAsset { get; set; }

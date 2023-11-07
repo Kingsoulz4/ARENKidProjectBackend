@@ -5,10 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ProjectBackend.Models;
 
 namespace ProjectBackend.Controllers
 {
+
+    public class GameLessonDataParamsHolder
+    {
+        public IFormFile? GameConfigJson { get; set; }
+    }
+
     public class GameLessonDataController : Controller
     {
         private readonly MvcWordAssetsContext _context;
@@ -58,13 +65,35 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,GameDataID,WordAssetDataID,WordTeaching,WordDisturbing")] GameLessonData gameLessonData)
+        public async Task<IActionResult> Create([Bind("Id,GameDataID,WordAssetDataID,WordTeaching,WordDisturbing")] GameLessonData gameLessonData, [Bind("GameConfigJson")] GameLessonDataParamsHolder paramsHolder)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(gameLessonData);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                var jsonFile = paramsHolder.GameConfigJson;
+                if (jsonFile != null && jsonFile.Length > 0)
+                {
+                    using (var reader = new StreamReader(jsonFile.OpenReadStream()))
+                    {
+                        var content = reader.ReadToEnd();
+                        var jsonData = JsonConvert.DeserializeObject<ListenAndCompleteSentenceGameData>(content);
+                        if(jsonData != null)
+                        {
+                            jsonData.GameId = gameLessonData.GameDataID;
+                            gameLessonData.GameConfigJson = JsonConvert.SerializeObject(jsonData);
+                            await _context.SaveChangesAsync();
+                            return RedirectToAction(nameof(Index));
+                        }
+                        else
+                        {
+                            return Problem("Upload config file fail");
+                        }
+
+                    }
+                    
+                }
             }
             ViewData["GameDataID"] = new SelectList(_context.GameData, "ID", "ID", gameLessonData.GameDataID);
             ViewData["WordAssetDataID"] = new SelectList(_context.WordAssetData, "ID", "ID", gameLessonData.WordAssetDataID);

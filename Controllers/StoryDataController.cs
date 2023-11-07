@@ -128,6 +128,14 @@ namespace ProjectBackend.Controllers
             {
                 try
                 {
+
+                    var jsonData = JsonConvert.DeserializeObject<StoryConfigData>(storyData.StoryDataConfigContent!);
+                    if(jsonData != null)
+                    {
+                        jsonData.Id = storyData.Id;
+                        storyData.StoryDataConfigContent = JsonConvert.SerializeObject(jsonData);
+                    }
+
                     _context.Update(storyData);
                     await _context.SaveChangesAsync();
                 }

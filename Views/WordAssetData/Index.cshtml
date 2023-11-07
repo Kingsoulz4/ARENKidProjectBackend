@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "/Views/Shared/_AdminLayout.cshtml";
+    //Layout = "/Views/Shared/_AdminLayout.cshtml";
 }
 
 <h1>Index</h1>
@@ -27,8 +27,11 @@
             <th>
                 @Html.DisplayNameFor(model => model.Text)
             </th>
-            <th>
+            @* <th>
                 @Html.DisplayNameFor(model => model.PathAsset)
+            </th> *@
+            <th>
+                @Html.DisplayNameFor(model => model.TopicDataID)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.SentenceType)
@@ -48,6 +51,9 @@
             @* <td>
                 @Html.DisplayFor(modelItem => item.PathAsset)
             </td> *@
+            <td>
+                @Html.DisplayFor(modelItem => item.TopicDataID)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.SentenceType)
             </td>

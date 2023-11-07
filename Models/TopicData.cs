@@ -7,7 +7,7 @@ namespace ProjectBackend.Models;
 public class TopicData 
 {
     [JsonProperty("id")]
-    public required string Id {get; set;}
+    public long Id {get; set;}
 
     [JsonProperty("name")]
     [Required]

@@ -3,7 +3,7 @@
 @{
 
     ViewData["Title"] = "Create";
-    Layout = "/Views/Shared/_AdminLayout.cshtml";
+    //Layout = "/Views/Shared/_AdminLayout.cshtml";
 }
 
 <h1>Create</h1>
@@ -50,8 +50,11 @@
             <span asp-validation-for="FileType" class="text-danger"></span>
             </div> *@
 
-            <span>Select your file </span>
-            <input type="file" name="fileToUpload" />
+            <div class="form-group">
+                <span>Select your file </span>
+                <input type="file" name="File3DModel" />
+            </div>
+            
             @* <input type="submit" value="Upload"/> *@
 
             <br />

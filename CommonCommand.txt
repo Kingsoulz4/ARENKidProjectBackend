@@ -4,6 +4,7 @@ dotnet aspnet-codegenerator controller -name TopicDataController -m TopicData -d
 
 dotnet ef migrations add AddTopicAndAddAgeToWordAssetData --context MvcWordAssetsContext
 
+
 dotnet ef database update --context MvcWordAssetsContext
 
 ngrok http https://localhost:7253 

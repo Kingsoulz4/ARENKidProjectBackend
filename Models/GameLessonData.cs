@@ -28,4 +28,7 @@ public class GameLessonData
     [JsonProperty("word_disturbing")]
     public string? WordDisturbing {get; set;}
 
+    [JsonProperty("game_config_json")]
+    public string? GameConfigJson {get; set;}
+
 }

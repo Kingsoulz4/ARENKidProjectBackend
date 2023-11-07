@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ProjectBackend.Migrations
 {
     [DbContext(typeof(MvcWordAssetsContext))]
-    [Migration("20231030093540_AddFieldsToGameData")]
-    partial class AddFieldsToGameData
+    [Migration("20231031170041_FixWrongReferenceWordAssetTopic")]
+    partial class FixWrongReferenceWordAssetTopic
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -309,14 +309,15 @@ namespace ProjectBackend.Migrations
 
             modelBuilder.Entity("ProjectBackend.Models.TopicData", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ThumbPath")
+                    b.Property<string>("Thumb")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -359,9 +360,6 @@ namespace ProjectBackend.Migrations
                     b.Property<int>("LevelAge")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Model3DDataId")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("PathAsset")
                         .HasColumnType("TEXT");
 
@@ -371,7 +369,7 @@ namespace ProjectBackend.Migrations
                     b.Property<string>("Text")
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("TopicDataDataID")
+                    b.Property<long>("TopicDataID")
                         .HasColumnType("INTEGER");
 
                     b.Property<long?>("WordAssetDataID")
@@ -379,7 +377,7 @@ namespace ProjectBackend.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Model3DDataId");
+                    b.HasIndex("TopicDataID");
 
                     b.HasIndex("WordAssetDataID");
 
@@ -538,15 +536,17 @@ namespace ProjectBackend.Migrations
 
             modelBuilder.Entity("ProjectBackend.Models.WordAssetData", b =>
                 {
-                    b.HasOne("ProjectBackend.Models.TopicData", "Model3DData")
+                    b.HasOne("ProjectBackend.Models.TopicData", "TopicData")
                         .WithMany("WordAssetDatas")
-                        .HasForeignKey("Model3DDataId");
+                        .HasForeignKey("TopicDataID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ProjectBackend.Models.WordAssetData", null)
                         .WithMany("FilterWords")
                         .HasForeignKey("WordAssetDataID");
 
-                    b.Navigation("Model3DData");
+                    b.Navigation("TopicData");
                 });
 
             modelBuilder.Entity("StoryDataWordAssetData", b =>

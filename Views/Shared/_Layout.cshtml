@@ -56,6 +56,26 @@
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
+
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseTopicData"
+                    aria-expanded="true" aria-controls="collapseTopicData">
+                    <i class="fa-regular fa-file"></i>
+                    <span>Topics</span>
+                </a>
+                <div id="collapseTopicData" class="collapse show" aria-labelledby="headingPages"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Topics Config</h6>
+                        <a class="collapse-item" asp-controller="TopicData" asp-action="Create">Create New</a>
+                        <div class="collapse-divider"></div>
+                        <h6 class="collapse-header">Topics Inspect</h6>
+                        <a class="collapse-item" asp-controller="TopicData" asp-action="Index">List Topic</a>
+                        <div class="collapse-divider"></div>
+                    </div>
+                </div>
+            </li>
+
             <li class="nav-item">
                 <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseWordAssetData"
                     aria-expanded="true" aria-controls="collapseWordAssetData">
@@ -169,6 +189,25 @@
                         <div class="collapse-divider"></div>
                         <h6 class="collapse-header">Game Lessons Inspect</h6>
                         <a class="collapse-item" asp-controller="GameLessonData" asp-action="Index">List Asset</a>
+                        <div class="collapse-divider"></div>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseStoryData" aria-expanded="true"
+                    aria-controls="collapseStoryData">
+                    <i class="fa-solid fa-book-open-reader"></i>
+                    <span>Story Data</span>
+                </a>
+                <div id="collapseStoryData" class="collapse show" aria-labelledby="headingPages"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Story Data Config</h6>
+                        <a class="collapse-item" asp-controller="StoryData" asp-action="Create">Create New</a>
+                        <div class="collapse-divider"></div>
+                        <h6 class="collapse-header">Story Data Inspect</h6>
+                        <a class="collapse-item" asp-controller="StoryData" asp-action="Index">List Asset</a>
                         <div class="collapse-divider"></div>
                     </div>
                 </div>

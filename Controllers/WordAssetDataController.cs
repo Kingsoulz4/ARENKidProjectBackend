@@ -20,7 +20,7 @@ namespace ProjectBackend.Controllers
     public class WordAssetDataCreateParamsHolder
     {
 
-        public bool IsNeedToBuildAssetBundle {get; set;}
+        public bool IsNeedToBuildAssetBundle { get; set; }
         public IFormFile? FlashCardImage { get; set; }
     }
 
@@ -86,6 +86,7 @@ namespace ProjectBackend.Controllers
         public IActionResult Create()
         {
             Console.WriteLine(ConfigurationManager.Instance!.Configuration!["Something"]);
+            ViewBag.TopicDataID = new SelectList(_context.TopicData, "Id", "Id");
             return View();
         }
 
@@ -94,7 +95,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Text,PathAsset,SentenceType")] WordAssetData wordAssetData, [Bind("IsNeedToBuildAssetBundle, FlashCardImage")] WordAssetDataCreateParamsHolder createStructData)
+        public async Task<IActionResult> Create([Bind("ID,Text,PathAsset,SentenceType, TopicDataID")] WordAssetData wordAssetData, [Bind("IsNeedToBuildAssetBundle, FlashCardImage")] WordAssetDataCreateParamsHolder createStructData)
         {
             if (ModelState.IsValid)
             {
@@ -104,6 +105,8 @@ namespace ProjectBackend.Controllers
 
                 _context.Add(wordAssetData);
                 await _context.SaveChangesAsync();
+
+                ViewBag.TopicDataID = new SelectList(_context.TopicData, "Id", "Id", wordAssetData.TopicDataID);
 
                 Console.WriteLine($"Created wordasset ID: {wordAssetData.ID}");
 
@@ -174,16 +177,11 @@ namespace ProjectBackend.Controllers
 
                 UpdateConfigFile(wordAssetData.ID);
 
-                if(createStructData!.IsNeedToBuildAssetBundle)
-                {
-                    Console.WriteLine("Build AssetBundle");
-                    AssetBuilder.ImportAssetAndBuildAssetBundle();
-                }
-
                 //Need To Modify
-                var endPoint = $"https://localhost:7253/WordAssetData/api/download?fileName={wordAssetData.ID}.unity3d";;
+                var endPoint = $"https://localhost:7253/WordAssetData/api/download?fileName={wordAssetData.ID}.unity3d"; ;
 
-                var wordAssetInfoDownload = new WordAssets{
+                var wordAssetInfoDownload = new WordAssets
+                {
                     Id = wordAssetData.ID,
                     Text = wordAssetData.Text,
                     LinkDownLoad = endPoint,
@@ -192,8 +190,19 @@ namespace ProjectBackend.Controllers
                 };
 
                 _context.Add(wordAssetInfoDownload);
-                
+
                 await _context.SaveChangesAsync();
+
+                Console.WriteLine("IsNeedToBuildAssetBundle "+ createStructData!.IsNeedToBuildAssetBundle);
+
+                if (createStructData!.IsNeedToBuildAssetBundle)
+                {
+                    Console.WriteLine("Build AssetBundle");
+
+                    //await _context.WordAssetData!.ForEachAsync(x => UpdateConfigFile(x.ID));
+                    
+                    AssetBuilder.ImportAssetAndBuildAssetBundle();
+                }
 
                 return RedirectToAction(nameof(Index));
             }
@@ -228,6 +237,7 @@ namespace ProjectBackend.Controllers
             // Need To Modify
             ViewData["Model3DDataID"] = new SelectList(_context.Model3DData, "Id", "Id");
             ViewBag.FlashCardPath = $"{ConfigurationManager.Instance!.GetUnityDataBuildRelativePath()}/{flashCard?.Link}";
+            ViewBag.TopicDataID = new SelectList(_context.TopicData, "Id", "Id");
 
             await Task.Yield();
 
@@ -239,7 +249,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("ID,Text,PathAsset,SentenceType")] WordAssetData wordAssetData)
+        public async Task<IActionResult> Edit(long id, [Bind("ID,Text,PathAsset,SentenceType, TopicDataID")] WordAssetData wordAssetData)
         {
             if (id != wordAssetData.ID)
             {
@@ -253,6 +263,8 @@ namespace ProjectBackend.Controllers
                     _context.Update(wordAssetData);
 
                     await _context.SaveChangesAsync();
+
+                    ViewBag.TopicDataID = new SelectList(_context.TopicData, "Id", "Id", wordAssetData.TopicDataID);
 
                     UpdateConfigFile(wordAssetData.ID);
 
@@ -351,7 +363,7 @@ namespace ProjectBackend.Controllers
             Console.WriteLine("AddOrRemove3DModel " + wordAssetID);
 
             var wordAssetToUpdate = _context.WordAssetData!.Where(x => x.ID == wordAssetID)
-            .Include(x=>x.Model3Ds)
+            .Include(x => x.Model3Ds)
             .Single();
 
             Console.WriteLine($"AddOrRemove3DModel wordAssetToUpdate text = {wordAssetToUpdate.Text}");
@@ -368,6 +380,7 @@ namespace ProjectBackend.Controllers
                 wordAssetToUpdate.Model3Ds.Remove(modelBelongTo);
                 Console.WriteLine("AddOrRemove3DModel Removed " + wordAssetToUpdate.Model3Ds.Count);
                 _context.SaveChanges();
+                UpdateConfigFile(wordAssetID);
                 return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
             }
 
@@ -377,19 +390,20 @@ namespace ProjectBackend.Controllers
                 wordAssetToUpdate.Model3Ds.Add(model3D);
                 Console.WriteLine("AddOrRemove3DModel Added " + wordAssetToUpdate.Model3Ds.Count);
                 _context.SaveChanges();
+                UpdateConfigFile(wordAssetID);
                 return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
             }
 
             await Task.Yield();
             return NotFound();
-            
+
         }
         public async Task<ActionResult> AddOrRemoveStory(long wordAssetID, long storyID)
         {
             Console.WriteLine("AddOrRemoveStory " + wordAssetID);
 
             var wordAssetToUpdate = _context.WordAssetData!.Where(x => x.ID == wordAssetID)
-            .Include(x=>x.Stories)
+            .Include(x => x.Stories)
             .Single();
 
             Console.WriteLine($"AddOrRemoveStory wordAssetToUpdate text = {wordAssetToUpdate.Text}");
@@ -406,6 +420,7 @@ namespace ProjectBackend.Controllers
                 wordAssetToUpdate.Stories.Remove(storyBelongTo);
                 Console.WriteLine("AddOrRemoveStory Removed " + wordAssetToUpdate.Stories.Count);
                 _context.SaveChanges();
+                UpdateConfigFile(wordAssetID);
                 return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
             }
 
@@ -415,12 +430,13 @@ namespace ProjectBackend.Controllers
                 wordAssetToUpdate.Stories.Add(storyData);
                 Console.WriteLine("AddOrRemoveStory Added " + wordAssetToUpdate.Stories.Count);
                 _context.SaveChanges();
+                UpdateConfigFile(wordAssetID);
                 return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
             }
 
             await Task.Yield();
             return NotFound();
-            
+
         }
 
 
@@ -428,13 +444,26 @@ namespace ProjectBackend.Controllers
         {
             Console.WriteLine("AddOrRemoveAudio " + imageID);
 
-            var wordAssetToUpdate = _context.WordAssetData!.Where(x => x.ID == wordAssetID).Single();
+            var wordAssetToUpdate = _context.WordAssetData!
+            .Include(x => x.Images)
+            .Where(x => x.ID == wordAssetID).Single();
 
             Console.WriteLine($"AddOrRemoveAudio wordAssetToUpdate text = {wordAssetToUpdate.Text}");
 
             if (wordAssetToUpdate.Images == null)
             {
                 wordAssetToUpdate.Images = new();
+            }
+
+            var imageBelongTo = wordAssetToUpdate.Images.FirstOrDefault(m => m.Id == imageID);
+
+            if (imageBelongTo != null && imageBelongTo != default)
+            {
+                wordAssetToUpdate.Images.Remove(imageBelongTo);
+                Console.WriteLine("AddOrRemoveAudio Removed " + wordAssetToUpdate.Images.Count);
+                _context.SaveChanges();
+                UpdateConfigFile(wordAssetID);
+                return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
             }
 
             var imageData = _context.ImageData!.Where(x => x.Id == imageID).Single();
@@ -461,34 +490,40 @@ namespace ProjectBackend.Controllers
 
                 Console.WriteLine("AddOrRemoveAudio Added " + wordAssetToUpdate.Images.Count);
                 _context.SaveChanges();
+                UpdateConfigFile(wordAssetID);
                 return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
-            }
-
-
-            var imageBelongTo = wordAssetToUpdate.Images.FirstOrDefault(m => m.Id == imageID);
-
-            if (imageBelongTo != null && imageBelongTo != default)
-            {
-                wordAssetToUpdate.Images.Remove(imageBelongTo);
-                Console.WriteLine("AddOrRemoveAudio Removed " + wordAssetToUpdate.Images.Count);
             }
 
             await Task.Yield();
 
-            return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
+            return NotFound();
+            
         }
 
         public async Task<ActionResult> AddOrRemoveAudio(long wordAssetID, long audioID)
         {
             Console.WriteLine("AddOrRemoveAudio " + audioID);
 
-            var wordAssetToUpdate = _context.WordAssetData!.Where(x => x.ID == wordAssetID).Single();
+            var wordAssetToUpdate = _context.WordAssetData!
+            .Include(x=> x.Audios)
+            .Where(x => x.ID == wordAssetID).Single();
 
             Console.WriteLine($"AddOrRemoveAudio wordAssetToUpdate text = {wordAssetToUpdate.Text}");
 
             if (wordAssetToUpdate.Audios == null)
             {
                 wordAssetToUpdate.Audios = new();
+            }
+
+            var audioBelongTo = wordAssetToUpdate.Audios.FirstOrDefault(m => m.Id == audioID);
+
+            if (audioBelongTo != null && audioBelongTo != default)
+            {
+                wordAssetToUpdate.Audios.Remove(audioBelongTo);
+                Console.WriteLine("AddOrRemoveAudio Removed " + wordAssetToUpdate.Audios.Count);
+                _context.SaveChanges();
+                UpdateConfigFile(wordAssetID);
+                return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
             }
 
             var audioData = _context.AudioData!.Where(x => x.Id == audioID).Single();
@@ -515,33 +550,39 @@ namespace ProjectBackend.Controllers
 
                 Console.WriteLine("AddOrRemoveAudio Added " + wordAssetToUpdate.Audios.Count);
                 _context.SaveChanges();
+                UpdateConfigFile(wordAssetID);
                 return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
-            }
-
-
-            var audioBelongTo = wordAssetToUpdate.Audios.FirstOrDefault(m => m.Id == audioID);
-
-            if (audioBelongTo != null && audioBelongTo != default)
-            {
-                wordAssetToUpdate.Audios.Remove(audioBelongTo);
-                Console.WriteLine("AddOrRemoveAudio Removed " + wordAssetToUpdate.Audios.Count);
             }
 
             await Task.Yield();
 
-            return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
+            return NotFound();
+            
         }
         public async Task<ActionResult> AddOrRemoveVideo(long wordAssetID, long videoID)
         {
             Console.WriteLine("AddOrRemoveVideo " + videoID);
 
-            var wordAssetToUpdate = _context.WordAssetData!.Where(x => x.ID == wordAssetID).Single();
+            var wordAssetToUpdate = _context.WordAssetData!
+            .Include(x=>x.Videos)
+            .Where(x => x.ID == wordAssetID).Single();
 
             Console.WriteLine($"AddOrRemoveVideo wordAssetToUpdate text = {wordAssetToUpdate.Text}");
 
             if (wordAssetToUpdate.Videos == null)
             {
                 wordAssetToUpdate.Videos = new();
+            }
+
+            var audioBelongTo = wordAssetToUpdate.Videos!.FirstOrDefault(m => m.Id == videoID);
+
+            if (audioBelongTo != null && audioBelongTo != default)
+            {
+                wordAssetToUpdate.Videos!.Remove(audioBelongTo);
+                Console.WriteLine("AddOrRemoveVideo Removed " + wordAssetToUpdate.Videos!.Count);
+                _context.SaveChanges();
+                UpdateConfigFile(wordAssetID);
+                return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
             }
 
             var videoData = _context.VideoData!.Where(x => x.Id == videoID).Single();
@@ -568,20 +609,13 @@ namespace ProjectBackend.Controllers
 
                 Console.WriteLine("AddOrRemoveAudio Added " + wordAssetToUpdate.Videos!.Count);
                 _context.SaveChanges();
+                UpdateConfigFile(wordAssetID);
                 return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
-            }
-
-            var audioBelongTo = wordAssetToUpdate.Videos!.FirstOrDefault(m => m.Id == videoID);
-
-            if (audioBelongTo != null && audioBelongTo != default)
-            {
-                wordAssetToUpdate.Videos!.Remove(audioBelongTo);
-                Console.WriteLine("AddOrRemoveVideo Removed " + wordAssetToUpdate.Videos!.Count);
             }
 
             await Task.Yield();
 
-            return RedirectToAction(nameof(Edit), new { id = wordAssetToUpdate.ID });
+            return NotFound();
         }
 
         public async Task<IActionResult> ChangeFlashCard(long wordAssetID, IFormFile imageToChange)
@@ -597,8 +631,17 @@ namespace ProjectBackend.Controllers
             }
 
             var flashCard = wordAssetToUpdate!.Images!.Find(x => x.ImageType == (long)AssetDataType.ImageType.Flashcard);
-            var filePath = Path.Combine($"{ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath()}/Flashcards", Path.GetFileName(flashCard!.FilePath!));
 
+            var filePath = "";
+            if (flashCard == null)
+            {
+                var fileName = $"flashcard_word_id_{wordAssetID}{Path.GetExtension(imageToChange.FileName)}";
+                filePath = Path.Combine($"{ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath()}/Flashcards", fileName);
+            }
+            else
+            {
+                filePath = Path.Combine($"{ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath()}/Flashcards", Path.GetFileName(flashCard!.FilePath!));
+            }
             var wordImageAssetDir = $"{ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath()}/WordAssets/{wordAssetID}/Images";
             if (!Directory.Exists(wordImageAssetDir))
             {
@@ -629,19 +672,24 @@ namespace ProjectBackend.Controllers
             .Include(wordAssetData => wordAssetData.Videos)
             .Include(WordAssetData => WordAssetData.Games)
             .Include(WordAssetData => WordAssetData.Stories)
-            
+
             .Where(x => x.ID == id)
             .ToListAsync();
             var data = JsonConvert.SerializeObject(list_model.FirstOrDefault());
 
             var filePath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), $"{DataDirectoryNames.WordAssetsDir}/{id}/{id}.json");
 
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
             using (var fileStream = System.IO.File.Open(filePath, FileMode.OpenOrCreate))
             {
                 byte[] info = new UTF8Encoding(true).GetBytes(data);
                 await fileStream.WriteAsync(info, 0, info.Length);
             }
-            
+
         }
 
         private void ConvertOldData(string jsonOldData)
@@ -726,7 +774,7 @@ namespace ProjectBackend.Controllers
         {
             var filepath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), $"{DataDirectoryNames.AssetBundlesDir}/{platform}", fileName);
 
-            if(!System.IO.File.Exists(filepath))
+            if (!System.IO.File.Exists(filepath))
             {
                 return Problem("File Not Found");
             }
@@ -750,7 +798,7 @@ namespace ProjectBackend.Controllers
         {
             var filepath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), $"{DataDirectoryNames.AssetBundlesDir}/{platform}", "flashcards.unity3d");
 
-            if(!System.IO.File.Exists(filepath))
+            if (!System.IO.File.Exists(filepath))
             {
                 return Problem("File Not Found");
             }
@@ -772,7 +820,7 @@ namespace ProjectBackend.Controllers
         {
             var filepath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), "Flashcards.zip");
 
-            if(!System.IO.File.Exists(filepath))
+            if (!System.IO.File.Exists(filepath))
             {
                 return Problem("File Not Found");
             }

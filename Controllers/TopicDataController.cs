@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ProjectBackend.Models;
 
 namespace ProjectBackend.Controllers
@@ -27,7 +29,7 @@ namespace ProjectBackend.Controllers
         }
 
         // GET: TopicData/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(long? id)
         {
             if (id == null || _context.TopicData == null)
             {
@@ -67,7 +69,7 @@ namespace ProjectBackend.Controllers
         }
 
         // GET: TopicData/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(long? id)
         {
             if (id == null || _context.TopicData == null)
             {
@@ -87,7 +89,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,Thumb")] TopicData topicData)
+        public async Task<IActionResult> Edit(long id, [Bind("Id,Name,Thumb")] TopicData topicData)
         {
             if (id != topicData.Id)
             {
@@ -118,7 +120,7 @@ namespace ProjectBackend.Controllers
         }
 
         // GET: TopicData/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(long? id)
         {
             if (id == null || _context.TopicData == null)
             {
@@ -138,7 +140,7 @@ namespace ProjectBackend.Controllers
         // POST: TopicData/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(long id)
         {
             if (_context.TopicData == null)
             {
@@ -154,9 +156,39 @@ namespace ProjectBackend.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool TopicDataExists(string id)
+        private bool TopicDataExists(long id)
         {
           return (_context.TopicData?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("TopicData/api/data")]
+        public async Task<IActionResult> GetModel3DDataByID()
+        {
+            var listTopicData = await _context.TopicData!
+            .Include(x => x.WordAssetDatas)
+            .Where(x => !x.Name.Equals("Normal Sentences"))
+            .ToListAsync()
+            ;
+            if (listTopicData == null)
+            {
+                return NotFound();
+            }
+
+            List<Dictionary<string, object>> listData = new();
+            foreach(var topicData in listTopicData)
+            {
+                var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(topicData));
+                List<long> listWordAssetID = new();
+                topicData.WordAssetDatas!.ForEach(x => listWordAssetID.Add(x.ID));
+                data["list_word_asset"] = listWordAssetID;
+                listData.Add(data);
+            }
+
+            await Task.Yield();
+
+            return new OkObjectResult(new { data = JsonConvert.SerializeObject(listData) });
         }
     }
 }
