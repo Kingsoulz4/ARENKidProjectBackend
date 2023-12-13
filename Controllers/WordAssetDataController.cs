@@ -95,7 +95,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Text,PathAsset,SentenceType, TopicDataID")] WordAssetData wordAssetData, [Bind("IsNeedToBuildAssetBundle, FlashCardImage")] WordAssetDataCreateParamsHolder createStructData)
+        public async Task<IActionResult> Create([Bind("ID,Text,PathAsset,SentenceType, TopicDataID, LevelAge")] WordAssetData wordAssetData, [Bind("IsNeedToBuildAssetBundle, FlashCardImage")] WordAssetDataCreateParamsHolder createStructData)
         {
             if (ModelState.IsValid)
             {
@@ -249,7 +249,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("ID,Text,PathAsset,SentenceType, TopicDataID")] WordAssetData wordAssetData)
+        public async Task<IActionResult> Edit(long id, [Bind("ID,Text,PathAsset,SentenceType, TopicDataID, LevelAge")] WordAssetData wordAssetData)
         {
             if (id != wordAssetData.ID)
             {
@@ -268,7 +268,7 @@ namespace ProjectBackend.Controllers
 
                     UpdateConfigFile(wordAssetData.ID);
 
-                    AssetBuilder.ImportAssetAndBuildAssetBundle();
+                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -333,6 +333,13 @@ namespace ProjectBackend.Controllers
         public IActionResult CreateByFile()
         {
             return View();
+        }
+
+        // GET: WordAssetData/BuildAssetBundle
+        public IActionResult BuildAssetBundle()
+        {
+            AssetBuilder.ImportAssetAndBuildAssetBundle();
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: WordAssetData/CreateByFile
@@ -675,7 +682,13 @@ namespace ProjectBackend.Controllers
 
             .Where(x => x.ID == id)
             .ToListAsync();
-            var data = JsonConvert.SerializeObject(list_model.FirstOrDefault());
+            
+            var wordAsset = list_model.FirstOrDefault();
+            wordAsset.Version = DateTime.Now.ToFileTimeUtc();
+
+            _context.SaveChanges();
+
+            var data = JsonConvert.SerializeObject(wordAsset);
 
             var filePath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), $"{DataDirectoryNames.WordAssetsDir}/{id}/{id}.json");
 
@@ -761,7 +774,7 @@ namespace ProjectBackend.Controllers
                 .Include(x => x.Stories)
                 .Where(x => x.ID == id)
                 .ToListAsync();
-                return new OkObjectResult(new { data = JsonConvert.SerializeObject(list_model) });
+                return new OkObjectResult(new { data = JsonConvert.SerializeObject(list_model.FirstOrDefault()) });
             }
 
             return new JsonResult(NotFound());

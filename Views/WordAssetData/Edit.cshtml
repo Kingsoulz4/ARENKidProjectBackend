@@ -36,6 +36,13 @@
                 <input asp-for="SentenceType" class="form-control" />
                 <span asp-validation-for="SentenceType" class="text-danger"></span>
             </div>
+
+            <div class="form-group">
+                <label asp-for="LevelAge" class="control-label"></label>
+                <input asp-for="LevelAge" class="form-control" />
+                <span asp-validation-for="LevelAge" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -172,7 +179,7 @@
 <div class="row">
     <div class="col-md-4">
         <h6 class="font-weight-bold">Config Flashcard</h6>
-        <img src="@ViewBag.FlashCardPath" id="imgPreview" class="rounded" alt="..." style="max-width: 180px;" >
+        
         <form enctype="multipart/form-data" asp-action="ChangeFlashCard">
             <div class="form-group">
                 <input type="hidden" name="wordAssetID" value=@Model.ID />
@@ -182,7 +189,10 @@
                 <input type="hidden" name="wordAssetToModify" value=@Model />
             </div>
 
-            <input type="file" onchange="readURL(this);" name="imageToChange" />
+            <div class="form-group">
+                <input type='file' onchange="readURL(this);" name= "imageToChange"/>
+                <img src="@ViewBag.FlashCardPath" id="imgPreview" class="rounded" alt="..." style="max-width: 180px;" >
+            </div>
 
             <div class="form-group">
                 <input type="submit" value="Submit" class="btn btn-primary" />

@@ -46,7 +46,7 @@ namespace ProjectBackend.Controllers
             }
 
             var imageData = from m in _context.ImageData
-                         select m;
+                            select m;
 
             if (!String.IsNullOrEmpty(searchPattern))
             {
@@ -108,14 +108,14 @@ namespace ProjectBackend.Controllers
 
                         await imageCreateDataHolder.imageFile.CopyToAsync(fileStream);
 
-                        
+
                     }
 
                     imageData.FilePath = Path.GetFileName(filePath);
                     imageData.Link = $"Images/{imageData.FilePath}";
                 }
 
-                
+
                 _context.Add(imageData);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -158,6 +158,22 @@ namespace ProjectBackend.Controllers
             {
                 try
                 {
+                    if (imageCreateDataHolder.imageFile != null)
+                    {
+                        var filePath = Path.Combine(ConfigurationManager.Instance!.GetUnityDataBuildAbsolutePath(), imageData.Link!);
+
+                        if (System.IO.File.Exists(filePath))
+                        {
+                            System.IO.File.Delete(filePath);
+                        }
+
+                        using (var fileStream = System.IO.File.Open(filePath, FileMode.OpenOrCreate))
+                        {
+                            Console.WriteLine("Modified image: " + filePath);
+                            await imageCreateDataHolder.imageFile!.CopyToAsync(fileStream);
+                        }
+                    }
+
                     _context.Update(imageData);
                     await _context.SaveChangesAsync();
                 }

@@ -94,6 +94,7 @@ namespace ProjectBackend.Controllers
                     }
                     
                 }
+                return RedirectToAction(nameof(Index));
             }
             ViewData["GameDataID"] = new SelectList(_context.GameData, "ID", "ID", gameLessonData.GameDataID);
             ViewData["WordAssetDataID"] = new SelectList(_context.WordAssetData, "ID", "ID", gameLessonData.WordAssetDataID);
@@ -123,7 +124,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,GameDataID,WordAssetDataID,WordTeaching,WordDisturbing")] GameLessonData gameLessonData)
+        public async Task<IActionResult> Edit(long id, [Bind("Id,GameDataID,WordAssetDataID,WordTeaching,WordDisturbing, GameConfigJson")] GameLessonData gameLessonData)
         {
             if (id != gameLessonData.Id)
             {

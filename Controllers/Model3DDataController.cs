@@ -95,7 +95,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,LinkDownload,FileType, ScaleFactor, Location, NameAsset")] Model3DData model3DData, [Bind("File3DModel")] Model3DDataParamsHolder paramsHolder)
+        public async Task<IActionResult> Create([Bind("Id,Name,LinkDownload,FileType, ScaleFactor, Location, NameAsset, WordDescription")] Model3DData model3DData, [Bind("File3DModel")] Model3DDataParamsHolder paramsHolder)
         {
             Console.WriteLine("Model valid " + ModelState.IsValid);
             //Console.WriteLine("Model valid " + ModelState.);
@@ -174,7 +174,7 @@ namespace ProjectBackend.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,Name,LinkDownload,FileType, ScaleFactor, Location, NameAsset")] Model3DData model3DData)
+        public async Task<IActionResult> Edit(long id, [Bind("Id,Name,LinkDownload,FileType, ScaleFactor, Location, NameAsset, WordDescription")] Model3DData model3DData)
         {
             if (id != model3DData.Id)
             {

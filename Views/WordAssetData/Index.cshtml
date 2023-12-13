@@ -36,6 +36,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.SentenceType)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LevelAge)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -56,6 +59,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.SentenceType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LevelAge)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |

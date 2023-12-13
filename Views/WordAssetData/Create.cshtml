@@ -35,6 +35,11 @@
                 <input asp-for="SentenceType" class="form-control" />
                 <span asp-validation-for="SentenceType" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="LevelAge" class="control-label"></label>
+                <input asp-for="LevelAge" class="form-control" />
+                <span asp-validation-for="LevelAge" class="text-danger"></span>
+            </div>
 
             <div class="form-group">
                 <input type='file' onchange="readURL(this);" name= "FlashCardImage"/>

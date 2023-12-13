@@ -47,4 +47,7 @@ public class WordAssetData
 
     [JsonProperty("stories")]
     public List<StoryData>? Stories {get; set;}
+
+    [JsonProperty("version")]
+    public long Version {get; set;}
 }

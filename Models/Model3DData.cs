@@ -33,6 +33,9 @@ public class Model3DData
     [JsonProperty("behavior")]
     public List<Mode3DBehaviorData>? Behavior { get; set; }
 
+    [JsonProperty("word_description")]
+    public long WordDescription {get; set;}
+
     [JsonIgnore]
     public ICollection<WordAssetData>? WordAssetDatas {get; set;}
 

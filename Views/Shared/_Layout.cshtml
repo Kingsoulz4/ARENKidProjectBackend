@@ -15,8 +15,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>ARENKID CMS/title </title>
-
+    <title>ARENKID CMS</title>
+ 
     <!-- Custom fonts for this template-->
     <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" type="text/css">
     <link
@@ -37,7 +37,7 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" asp-controller="Home" asp-action="Index">
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
@@ -215,6 +215,21 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
+
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseBundle" aria-expanded="true"
+                    aria-controls="collapseBundle">
+                    <i class="fa-solid fa-book-open-reader"></i>
+                    <span>Build AssetBundle</span>
+                </a>
+                <div id="collapseBundle" class="collapse show" aria-labelledby="headingPages"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" asp-controller="WordAssetData" asp-action="BuildAssetBundle">Build</a>
+                        <div class="collapse-divider"></div>
+                    </div>
+                </div>
+            </li>
 
             <!-- Sidebar Toggler (Sidebar) -->
             <div class="text-center d-none d-md-inline">

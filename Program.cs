@@ -104,11 +104,11 @@ builder.Services.AddRazorPages();
 
 builder.Services.ConfigureApplicationCookie(options =>
         {
-            options.AccessDeniedPath = "/Authorization/AccessDenied";
+            options.AccessDeniedPath = "/AccessDenied";
             options.Cookie.Name = "MyApplication_Auth";
             options.Cookie.HttpOnly = true;
             options.ExpireTimeSpan = TimeSpan.FromDays(7);
-            options.LoginPath = "/Authorization/Login";
+            options.LoginPath = "/Login";
             options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
             options.SlidingExpiration = true;
         });
@@ -146,9 +146,16 @@ Console.WriteLine($"Unity data build absolute path: {ConfigurationManager.Instan
 
 app.UseStaticFiles(new StaticFileOptions
 {
+    
     FileProvider = new PhysicalFileProvider(
         "D:/UET/FINAL THESIS/src/UnityProject/AssetBundleBuilder/Assets/MainContainer/Resources/DataBuild"),
-    RequestPath = "/DataBuild"
+    RequestPath = "/DataBuild",
+    // OnPrepareResponse = context =>
+    // {
+    //     context.Context.Response.Headers["Cache-Control"] = "public,max-age=2592000";
+    //     context.Context.Response.Headers["Expires"] = DateTime.UtcNow.AddMonths(1).ToString("R");
+    // },
+    
 });
 
 app.UseStaticFiles(new StaticFileOptions
